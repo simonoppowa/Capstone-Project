@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "766956908723",
+    "firebase_url": "https://tothemoon-tracker.firebaseio.com",
+    "project_id": "tothemoon-tracker",
+    "storage_bucket": "tothemoon-tracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766956908723:android:bd722e33e7e6c7e9",
+        "android_client_info": {
+          "package_name": "com.github.simonoppowa.tothemoon_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766956908723-lj9ne8hgg52osa2u24ci9b9m6saev1mh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.simonoppowa.tothemoon_tracker",
+            "certificate_hash": "7e86464dab3c1a35708c24efd04c6023e118da21"
+          }
+        },
+        {
+          "client_id": "766956908723-fmvpgfl59ftusnl3at5o0bvejdpd4t4q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuoIHUjvR0FomVYDMk_tnAI2AXEMF5fw4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766956908723-fmvpgfl59ftusnl3at5o0bvejdpd4t4q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
