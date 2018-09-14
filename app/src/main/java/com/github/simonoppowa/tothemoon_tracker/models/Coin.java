@@ -3,10 +3,15 @@ package com.github.simonoppowa.tothemoon_tracker.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Coin implements Parcelable {
 
+    @SerializedName("Name")
     private String name;
+    @SerializedName("FullName")
     private String fullName;
+    @SerializedName("Url")
     private String imageUrl;
 
     public Coin(String name, String fullName, String imageUrl) {
