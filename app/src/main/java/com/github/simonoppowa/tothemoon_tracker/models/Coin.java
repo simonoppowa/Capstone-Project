@@ -11,7 +11,7 @@ public class Coin implements Parcelable {
     private String name;
     @SerializedName("FullName")
     private String fullName;
-    @SerializedName("Url")
+    @SerializedName("ImageUrl")
     private String imageUrl;
 
     public Coin(String name, String fullName, String imageUrl) {

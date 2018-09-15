@@ -1,7 +1,10 @@
 package com.github.simonoppowa.tothemoon_tracker.activities;
 
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
@@ -27,9 +30,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String CRYPTOCOMPARE_BASE_URL = "https://min-api.cryptocompare.com/data/";
     private static final String CRYPTOCOMPARE_IMAGE_BASE_URL = "https://www.cryptocompare.com/media/";
 
+    public static final String CURRENCY_SP_KEY = "currencySharedPreference";
+    public static final String DEFAULT_CURRENCY = "USD";
+
     private static Retrofit retrofit;
 
     private TransactionDatabase transactionDatabase;
+
+    private String mUsedCurrency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up libraries
         Timber.plant(new Timber.DebugTree());
         ButterKnife.bind(this);
+
+        setupSharedPreferences();
 
         transactionDatabase = TransactionDatabase.getDatabase(getApplicationContext());
 
@@ -51,18 +61,24 @@ public class MainActivity extends AppCompatActivity {
 
         CoinServiceInterface coinServiceInterface = retrofit.create(CoinServiceInterface.class);
 
-        Call<JsonElement> call = coinServiceInterface.getCoinInfo("BTC", "USD");
+        Call<JsonElement> call = coinServiceInterface.getCoinInfo("BTC", mUsedCurrency);
+
+        Timber.d(String.valueOf(call.request().url()));
 
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 //TODO
-                JsonElement responseJSON = response.body();
-                Timber.d(responseJSON.toString());
+                if(response.code() == 200) {
+                    JsonElement responseJSON = response.body();
+                    Timber.d(responseJSON.toString());
 
-                Coin newCoin = JsonUtils.getCoinFromResponse(responseJSON);
+                    Coin newCoin = JsonUtils.getCoinFromResponse(responseJSON);
 
-                Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() + ", " + newCoin.getImageUrl());
+                    Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() + ", " + newCoin.getImageUrl());
+                } else {
+                    Timber.d("API Call returned Error: %s", String.valueOf(response.body()));
+                }
 
             }
 
@@ -73,13 +89,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        final Call<JsonElement> priceCall = coinServiceInterface.getSingleCoinPrice("BTC", "USD");
+        final Call<JsonElement> priceCall = coinServiceInterface.getSingleCoinPrice("BTC", mUsedCurrency);
         priceCall.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 //TODO
-                JsonElement jsonElement = response.body();
-                Timber.d(jsonElement.getAsJsonObject().get("USD").toString());
+
+                if(response.code() == 200) {
+                    JsonElement jsonElement = response.body();
+                    Timber.d(jsonElement.getAsJsonObject().get("USD").toString());
+                } else {
+                    Timber.d("API Call returned Error: %s", String.valueOf(response.body()));
+                }
             }
 
             @Override
@@ -91,6 +112,19 @@ public class MainActivity extends AppCompatActivity {
         // Room DB
         new DatabaseAsyncTask().execute();
 
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private void setupSharedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences.contains(CURRENCY_SP_KEY)) {
+            mUsedCurrency = sharedPreferences.getString(CURRENCY_SP_KEY, DEFAULT_CURRENCY);
+        } else {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(CURRENCY_SP_KEY, DEFAULT_CURRENCY);
+            editor.commit();
+            mUsedCurrency = DEFAULT_CURRENCY;
+        }
     }
 
     //TODO
