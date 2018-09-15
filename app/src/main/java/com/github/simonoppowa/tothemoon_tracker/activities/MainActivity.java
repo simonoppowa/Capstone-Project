@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
+import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioFragment;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.utils.CoinServiceInterface;
@@ -94,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 //TODO
-
                 if(response.code() == 200) {
                     JsonElement jsonElement = response.body();
                     Timber.d(jsonElement.getAsJsonObject().get("USD").toString());
@@ -111,6 +113,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Room DB
         new DatabaseAsyncTask().execute();
+
+        // Fragments UI
+
+        // Create Portfolio Fragment
+        PortfolioFragment portfolioFragment = PortfolioFragment.newInstance(mUsedCurrency, 1431, 11, 143);
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.portfolio_fragment_container, portfolioFragment);
+        ft.commit();
 
     }
 
