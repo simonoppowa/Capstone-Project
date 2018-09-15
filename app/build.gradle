@@ -30,6 +30,9 @@ dependencies {
     implementation "com.android.support:exifinterface:$supportLibVersion"
 
     implementation "android.arch.persistence.room:runtime:$roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
+    implementation "android.arch.lifecycle:extensions:$roomVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$roomVersion"
 
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.2'
 

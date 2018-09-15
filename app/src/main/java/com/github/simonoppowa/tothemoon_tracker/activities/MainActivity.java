@@ -1,13 +1,18 @@
 package com.github.simonoppowa.tothemoon_tracker.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.utils.CoinServiceInterface;
 import com.github.simonoppowa.tothemoon_tracker.utils.JsonUtils;
 import com.google.gson.JsonElement;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -20,8 +25,11 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity {
 
     private static final String CRYPTOCOMPARE_BASE_URL = "https://min-api.cryptocompare.com/data/";
+    private static final String CRYPTOCOMPARE_IMAGE_BASE_URL = "https://www.cryptocompare.com/media/";
 
     private static Retrofit retrofit;
+
+    private TransactionDatabase transactionDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         ButterKnife.bind(this);
 
-        //
+        transactionDatabase = TransactionDatabase.getDatabase(getApplicationContext());
+
+        // Retrofit API call
         retrofit = new Retrofit.Builder()
                 .baseUrl(CRYPTOCOMPARE_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -78,6 +88,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Room DB
+        new DatabaseAsyncTask().execute();
 
+    }
+
+    //TODO
+    private class DatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            Transaction transaction = new Transaction("BTC", 1, 1.1);
+
+            transactionDatabase.transactionDao().insertTransaction(transaction);
+
+            List<Transaction> transactionList = transactionDatabase.transactionDao().getAllTransactions();
+
+            for(Transaction t : transactionList) {
+                Timber.d(t.getCoinName());
+            }
+
+
+            return null;
+        }
     }
 }
