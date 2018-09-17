@@ -30,21 +30,21 @@ public class PortfolioFragment extends Fragment {
     TextView mPortfolioChangeDailyTV;
 
     private String mUsedCurrency;
-    private long mPortfolioTotal;
-    private long mPortfolioChangeDaily;
-    private int mPortfolioChangeDailyPct;
+    private double mPortfolioTotal;
+    private double mPortfolioChangeDaily;
+    private double mPortfolioChangeDailyPct;
 
     public PortfolioFragment() {
         // Required empty public constructor
     }
 
-    public static PortfolioFragment newInstance(String currency, long portfolioTotal, long portfolioChangeDaily, int portfolioChangeDailyPct) {
+    public static PortfolioFragment newInstance(String currency, double portfolioTotal, double portfolioChangeDaily, double portfolioChangeDailyPct) {
         PortfolioFragment fragment = new PortfolioFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, currency);
-        args.putLong(ARG_PARAM2, portfolioTotal);
-        args.putLong(ARG_PARAM3, portfolioChangeDaily);
-        args.putInt(ARG_PARAM4, portfolioChangeDailyPct);
+        args.putDouble(ARG_PARAM2, portfolioTotal);
+        args.putDouble(ARG_PARAM3, portfolioChangeDaily);
+        args.putDouble(ARG_PARAM4, portfolioChangeDailyPct);
         fragment.setArguments(args);
 
         return fragment;
@@ -58,9 +58,9 @@ public class PortfolioFragment extends Fragment {
 
 
             mUsedCurrency = bundle.getString(ARG_PARAM1);
-            mPortfolioTotal = bundle.getLong(ARG_PARAM2);
-            mPortfolioChangeDaily = bundle.getLong(ARG_PARAM3);
-            mPortfolioChangeDailyPct = bundle.getInt(ARG_PARAM4);
+            mPortfolioTotal = bundle.getDouble(ARG_PARAM2);
+            mPortfolioChangeDaily = bundle.getDouble(ARG_PARAM3);
+            mPortfolioChangeDailyPct = bundle.getDouble(ARG_PARAM4);
         } else {
             throw new NullPointerException("No bundle was passed to PortfolioFragment");
         }
@@ -77,9 +77,9 @@ public class PortfolioFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         // Set textViews
-        mTotalPortfolioTV.setText(String.valueOf(mPortfolioTotal));
+        mTotalPortfolioTV.setText(mUsedCurrency + String.valueOf(mPortfolioTotal));
         mPortfolioChangeDailyPCTTV.setText(String.valueOf(mPortfolioChangeDailyPct) + "%");
-        mPortfolioChangeDailyTV.setText(String.valueOf(mPortfolioChangeDaily));
+        mPortfolioChangeDailyTV.setText(mUsedCurrency + String.valueOf(mPortfolioChangeDaily));
 
         return view;
     }

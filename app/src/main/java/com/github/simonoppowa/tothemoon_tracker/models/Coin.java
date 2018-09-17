@@ -13,11 +13,17 @@ public class Coin implements Parcelable {
     private String fullName;
     @SerializedName("ImageUrl")
     private String imageUrl;
+    private double currentPrice;
+    private double change24hPct;
+    private double change24h;
 
-    public Coin(String name, String fullName, String imageUrl) {
+    public Coin(String name, String fullName, String imageUrl, double currentPrice, double change24hPct, double change24h) {
         this.name = name;
         this.fullName = fullName;
         this.imageUrl = imageUrl;
+        this.currentPrice = currentPrice;
+        this.change24hPct = change24hPct;
+        this.change24h = change24h;
     }
 
     /**
@@ -27,6 +33,10 @@ public class Coin implements Parcelable {
         name = input.readString();
         fullName = input.readString();
         imageUrl = input.readString();
+        currentPrice = input.readDouble();
+        change24hPct = input.readDouble();
+        change24h = input.readDouble();
+
     }
 
     public String getName() {
@@ -53,6 +63,29 @@ public class Coin implements Parcelable {
         this.imageUrl = imageUrl;
     }
 
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public double getChange24hPct() {
+        return change24hPct;
+    }
+
+    public void setChange24hPct(double change24hPct) {
+        this.change24hPct = change24hPct;
+    }
+
+    public double getChange24h() {
+        return change24h;
+    }
+
+    public void setChange24h(double change24h) {
+        this.change24h = change24h;
+    }
 
     @Override
     public int describeContents() {
@@ -64,6 +97,9 @@ public class Coin implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(fullName);
         parcel.writeString(imageUrl);
+        parcel.writeDouble(currentPrice);
+        parcel.writeDouble(change24hPct);
+        parcel.writeDouble(change24h);
     }
 
     public static final Parcelable.Creator<Coin> CREATOR = new Parcelable.Creator<Coin>() {

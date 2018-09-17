@@ -10,12 +10,18 @@ public class JsonUtils {
     public static Coin getCoinFromResponse(JsonElement responseJson) {
 
         JsonObject dataJsonObject = responseJson.getAsJsonObject().getAsJsonObject("Data");
-        JsonElement coinInfoJsonObject = dataJsonObject.getAsJsonObject("CoinInfo");
+        JsonElement coinInfoJsonElement = dataJsonObject.getAsJsonObject("CoinInfo");
+        JsonElement coinPriceDataJsonElement = dataJsonObject.getAsJsonObject("AggregatedData");
 
-        Gson gson = new Gson();
+        String coinName = coinInfoJsonElement.getAsJsonObject().get("Name").getAsString();
+        String fullName = coinInfoJsonElement.getAsJsonObject().get("FullName").getAsString();
+        String imageUrl = coinInfoJsonElement.getAsJsonObject().get("ImageUrl").getAsString();
 
-        Coin coin = gson.fromJson(coinInfoJsonObject, Coin.class);
+        double currentPrice = coinPriceDataJsonElement.getAsJsonObject().get("PRICE").getAsDouble();
+        double change24hPct = coinPriceDataJsonElement.getAsJsonObject().get("CHANGEPCT24HOUR").getAsDouble();
+        double change24h = coinPriceDataJsonElement.getAsJsonObject().get("CHANGE24HOUR").getAsDouble();
 
-        return coin;
+
+        return new Coin(coinName, fullName, imageUrl, currentPrice, change24hPct, change24h);
     }
 }

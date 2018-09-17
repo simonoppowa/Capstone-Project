@@ -48,4 +48,14 @@ public class Transaction {
     public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Transaction) {
+            if(((Transaction) obj).coinName.equals(coinName))  {
+                return true;
+            }
+        }
+        return false;
+    }
 }
