@@ -11,9 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
+import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioFragment;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.models.CoinAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Portfolio;
+import com.github.simonoppowa.tothemoon_tracker.models.PortfolioAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.utils.CoinServiceInterface;
 import com.github.simonoppowa.tothemoon_tracker.utils.JsonUtils;
@@ -40,14 +43,18 @@ public class MainActivity extends AppCompatActivity {
 
     private static Retrofit retrofit;
     private static int callNumber;
+    private static int call24hNumber;
 
     private TransactionDatabase transactionDatabase;
+    private CoinServiceInterface mCoinServiceInterface;
 
     private String mUsedCurrency;
     private List<Coin> mOwnedCoins;
     private List<Transaction> mTransactions;
+    private List<List<CoinAtTime>> mCoinsAtTime;
 
     private PortfolioFragment mPortfolioFragment;
+    private Portfolio24hGraphFragment mPortfolioGraphFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mOwnedCoins = new ArrayList<>();
+        mCoinsAtTime = new ArrayList<>();
         setupSharedPreferences();
 
         transactionDatabase = TransactionDatabase.getDatabase(getApplicationContext());
@@ -115,12 +123,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchFullCoinsInfo() {
         if(mTransactions != null) {
-            CoinServiceInterface coinServiceInterface = retrofit.create(CoinServiceInterface.class);
+            mCoinServiceInterface = retrofit.create(CoinServiceInterface.class);
             callNumber = mTransactions.size();
+            call24hNumber = mTransactions.size();
 
             for(Transaction transaction : mTransactions) {
-                Call<JsonElement> call = coinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency);
-                fetchCoinInfo(call);
+                Call<JsonElement> coinInfoCall = mCoinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency, 0);
+                fetchCoinInfo(coinInfoCall);
+
+                Call<JsonElement> coin24hInfoCall = mCoinServiceInterface.get24hCoinChange(transaction.getCoinName(), mUsedCurrency, 24);
+                fetchCoin24hInfo(coin24hInfoCall);
             }
         }
     }
@@ -144,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
                     Timber.d("Calls left: %s", callNumber);
                     if(callNumber == 0) {
                         createPortfolioFragment();
-
                     }
 
                 } else {
@@ -155,6 +166,36 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
                 Timber.d("Coin info call failed");
+            }
+        });
+    }
+
+    public void fetchCoin24hInfo(Call call) {
+        Timber.d("URL called: %s", String.valueOf(call.request().url()));
+
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if(response.code() == 200) {
+                    JsonElement responseJson = response.body();
+                    Timber.d(responseJson.toString());
+
+                    List<CoinAtTime> newCoinAtTime = JsonUtils.getCoinAtTimeListFromResponse(responseJson, call.request().url().queryParameter("fsym"));
+                    call24hNumber--;
+                    mCoinsAtTime.add(newCoinAtTime);
+
+                    if(call24hNumber == 0) {
+                        List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(mCoinsAtTime);
+                        create24hGraphFragment(portfoliosAtTime);
+                    }
+                } else {
+                    Timber.d("Coin 24h info call failed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                Timber.d("Coin 24h info call failed");
             }
         });
     }
@@ -174,6 +215,38 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.portfolio_fragment_container, mPortfolioFragment);
         ft.commit();
+    }
+
+    private void create24hGraphFragment(List<PortfolioAtTime> portfoliosAtTime) {
+
+        // Create PortfolioGraphFragment
+        mPortfolioGraphFragment = Portfolio24hGraphFragment.newInstance(mUsedCurrency, portfoliosAtTime);
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.portfolio_graph_fragment_container, mPortfolioGraphFragment);
+        ft.commit();
+    }
+
+    private List<PortfolioAtTime> create24hPortfolios(List<List<CoinAtTime>> coinsAtTime) {
+        List<PortfolioAtTime> portfoliosAtTime = new ArrayList<>();
+
+        int i = 0, j = 0;
+        while (i < coinsAtTime.get(0).size()) {
+            double sum = 0;
+            long time = coinsAtTime.get(0).get(i).getAtTime();
+            while (j  < coinsAtTime.size()) {
+                sum+=coinsAtTime.get(j).get(i).getCurrentPrice();
+                j++;
+            }
+            PortfolioAtTime portfolioAtTime = new PortfolioAtTime(sum, 0, 0, time);
+            Timber.d("Created new PortfolioAtTime: "  + sum + ", " + time);
+            portfoliosAtTime.add(portfolioAtTime);
+            j=0;
+            i++;
+        }
+        return portfoliosAtTime;
     }
 
     private Portfolio calculateTotalPortfolio() {

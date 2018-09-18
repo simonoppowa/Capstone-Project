@@ -56,7 +56,6 @@ public class PortfolioFragment extends Fragment {
         if(getArguments() != null) {
             Bundle bundle = getArguments();
 
-
             mUsedCurrency = bundle.getString(ARG_PARAM1);
             mPortfolioTotal = bundle.getDouble(ARG_PARAM2);
             mPortfolioChangeDaily = bundle.getDouble(ARG_PARAM3);

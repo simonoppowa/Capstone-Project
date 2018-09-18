@@ -26,6 +26,15 @@ public class Coin implements Parcelable {
         this.change24h = change24h;
     }
 
+    public Coin(String name, double currentPrice) {
+        this.name = name;
+        this.fullName = "";
+        this.imageUrl = "";
+        this.currentPrice = currentPrice;
+        this.change24hPct = 0;
+        this.change24h = 0;
+    }
+
     /**
      * Parcelable constructor
      */
