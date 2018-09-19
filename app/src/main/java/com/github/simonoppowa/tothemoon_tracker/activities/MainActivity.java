@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
+import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioFragment;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private PortfolioFragment mPortfolioFragment;
     private Portfolio24hGraphFragment mPortfolioGraphFragment;
+    private CoinsInfoFragment mCoinsInfoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         createPortfolioFragment();
+                        createCoinsInfoFragment();
 
                         return mOwnedCoins;
                     }
@@ -253,6 +256,18 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.portfolio_graph_fragment_container, mPortfolioGraphFragment);
+        ft.commit();
+    }
+
+    private void createCoinsInfoFragment() {
+
+        // Create CoinsInfoFragment
+        mCoinsInfoFragment = CoinsInfoFragment.newInstance(mUsedCurrency, (ArrayList<Coin>) mOwnedCoins);
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.coins_info_fragment_container, mCoinsInfoFragment);
         ft.commit();
     }
 
