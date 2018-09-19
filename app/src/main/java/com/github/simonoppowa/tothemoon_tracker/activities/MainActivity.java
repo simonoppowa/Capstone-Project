@@ -26,10 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import okhttp3.HttpUrl;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
@@ -42,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String DEFAULT_CURRENCY = "USD";
 
     private static Retrofit retrofit;
-    private static int callNumber;
-    private static int call24hNumber;
 
     private TransactionDatabase transactionDatabase;
     private CoinServiceInterface mCoinServiceInterface;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         // Retrofit API call
         retrofit = new Retrofit.Builder()
                 .baseUrl(CRYPTOCOMPARE_BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -124,80 +126,105 @@ public class MainActivity extends AppCompatActivity {
     private void fetchFullCoinsInfo() {
         if(mTransactions != null) {
             mCoinServiceInterface = retrofit.create(CoinServiceInterface.class);
-            callNumber = mTransactions.size();
-            call24hNumber = mTransactions.size();
+
+            List<Observable<?>> coinInfoRequests = new ArrayList<>();
+            List<Observable<?>> coin24hInfoRequest = new ArrayList<>();
 
             for(Transaction transaction : mTransactions) {
-                Call<JsonElement> coinInfoCall = mCoinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency, 0);
-                fetchCoinInfo(coinInfoCall);
+                Observable<JsonElement> coinInfoCall = mCoinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency, 0);
+                coinInfoRequests.add(coinInfoCall);
 
-                Call<JsonElement> coin24hInfoCall = mCoinServiceInterface.get24hCoinChange(transaction.getCoinName(), mUsedCurrency, 24);
-                fetchCoin24hInfo(coin24hInfoCall);
+                Observable<Response<JsonElement>> coin24hInfoCall = mCoinServiceInterface.get24hCoinChange(transaction.getCoinName(), mUsedCurrency, 24);
+                coin24hInfoRequest.add(coin24hInfoCall);
             }
+
+            fetchCoinsInfo(coinInfoRequests);
+
+            fetchCoins24hInfo(coin24hInfoRequest);
         }
     }
 
-    public void fetchCoinInfo(Call call) {
-        Timber.d("URL called: %s", String.valueOf(call.request().url()));
+    public void fetchCoinsInfo(List<Observable<?>> coinInfoRequests) {
 
-        call.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                if(response.code() == 200) {
-                    JsonElement responseJSON = response.body();
-                    Timber.d(responseJSON.toString());
+        // Use RxJava2 to coordinate coinInfoCalls
+        Observable.zip(coinInfoRequests,
+                new Function<Object[], Object>() {
 
-                    Coin newCoin = JsonUtils.getCoinFromResponse(responseJSON);
-                    Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() +
-                            ", " + newCoin.getImageUrl() + ", " + newCoin.getCurrentPrice()
-                            + ", " + newCoin.getChange24h() + ", " + newCoin.getChange24hPct());
-                    mOwnedCoins.add(newCoin);
-                    callNumber--;
-                    Timber.d("Calls left: %s", callNumber);
-                    if(callNumber == 0) {
+                    @Override
+                    public Object apply(Object[] objects) {
+                        // Objects[] is an array of combined results of completed requests
+
+                        for(Object response : objects) {
+                            Coin newCoin = JsonUtils.getCoinFromResponse((JsonElement) response);
+
+                            Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() +
+                                    ", " + newCoin.getImageUrl() + ", " + newCoin.getCurrentPrice()
+                                    + ", " + newCoin.getChange24h() + ", " + newCoin.getChange24hPct());
+                            mOwnedCoins.add(newCoin);
+                        }
+
                         createPortfolioFragment();
+
+                        return mOwnedCoins;
                     }
-
-                } else {
-                    Timber.d("API call returned error: %s", String.valueOf(response.body()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                Timber.d("Coin info call failed");
-            }
-        });
+                })
+                .subscribe(
+                        new Consumer<Object>() {
+                            @Override
+                            public void accept(Object o) throws Exception {
+                                // Successful completion of all requests
+                                createPortfolioFragment();
+                            }
+                        },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                // Error completion of requests
+                                throwable.printStackTrace();
+                            }
+                        }
+                );
     }
 
-    public void fetchCoin24hInfo(Call call) {
-        Timber.d("URL called: %s", String.valueOf(call.request().url()));
+    public void fetchCoins24hInfo(List<Observable<?>> coin24hInfoRequest) {
 
-        call.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                if(response.code() == 200) {
-                    JsonElement responseJson = response.body();
-                    Timber.d(responseJson.toString());
+        // Use RxJava2 to coordinate coin24hInfoCalls
+        Observable.zip(
+                coin24hInfoRequest,
+                new Function<Object[], Object>() {
 
-                    List<CoinAtTime> newCoinAtTime = JsonUtils.getCoinAtTimeListFromResponse(responseJson, call.request().url().queryParameter("fsym"));
-                    call24hNumber--;
-                    mCoinsAtTime.add(newCoinAtTime);
+                    @Override
+                    public Object apply(Object[] objects) {
 
-                    if(call24hNumber == 0) {
-                        List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(mCoinsAtTime);
-                        create24hGraphFragment(portfoliosAtTime);
+                        for(Object response : objects) {
+
+                            Response<JsonElement> responseJson = (Response<JsonElement>) response;
+
+                            HttpUrl url = ((Response<JsonElement>) response).raw().request().url();
+
+                            JsonElement jsonElement = ((Response<JsonElement>) response).body();
+
+                            List<CoinAtTime> newCoinAtTime = JsonUtils.getCoinAtTimeListFromResponse(jsonElement, url.queryParameter("fsym"));
+                            mCoinsAtTime.add(newCoinAtTime);
+                        }
+                        return mCoinsAtTime;
                     }
-                } else {
-                    Timber.d("Coin 24h info call failed");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                Timber.d("Coin 24h info call failed");
-            }
-        });
+                })
+                .subscribe(
+                        new Consumer<Object>() {
+                            @Override
+                            public void accept(Object o) throws Exception {
+                                List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(mCoinsAtTime);
+                                create24hGraphFragment(portfoliosAtTime);
+                            }
+                        },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                            }
+                        }
+                );
     }
 
     private void createPortfolioFragment() {
