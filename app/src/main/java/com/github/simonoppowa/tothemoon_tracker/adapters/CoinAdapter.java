@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.utils.NumberFormatUtils;
 
 import java.util.List;
 
@@ -45,8 +46,8 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
 
         holder.coinNameTextView.setText(mCoins.get(position).getName());
         holder.coinFullNameTextView.setText(mCoins.get(position).getFullName());
-        holder.coin24hChangePctTextView.setText(String.valueOf(mCoins.get(position).getChange24hPct()));
-        holder.coin24ChangeTextView.setText(String.valueOf(mCoins.get(position).getChange24h()));
+        holder.coin24hChangePctTextView.setText(NumberFormatUtils.format2Decimal(mCoins.get(position).getChange24hPct()));
+        holder.coin24ChangeTextView.setText(NumberFormatUtils.format2Decimal(mCoins.get(position).getChange24h()));
     }
 
     @Override

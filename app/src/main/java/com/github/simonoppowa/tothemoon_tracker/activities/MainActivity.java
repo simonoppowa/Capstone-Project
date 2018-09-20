@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         Timber.d("Portfolio created: " + portfolio.getTotalPrice() + ", " + portfolio.getChange24h() + ", " + portfolio.getChange24hPct());
 
         // Create Portfolio Fragment
+        //TODO
         mPortfolioFragment = PortfolioFragment.newInstance(mUsedCurrency, calculateTotalPortfolio().getTotalPrice(),
                 calculateTotalPortfolio().getChange24h(), calculateTotalPortfolio().getChange24hPct());
 

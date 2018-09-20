@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.utils.NumberFormatUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,9 +77,9 @@ public class PortfolioFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         // Set textViews
-        mTotalPortfolioTV.setText(mUsedCurrency + String.valueOf(mPortfolioTotal));
-        mPortfolioChangeDailyPCTTV.setText(String.valueOf(mPortfolioChangeDailyPct) + "%");
-        mPortfolioChangeDailyTV.setText(mUsedCurrency + String.valueOf(mPortfolioChangeDaily));
+        mTotalPortfolioTV.setText(mUsedCurrency + " " + NumberFormatUtils.format2Decimal(mPortfolioTotal));
+        mPortfolioChangeDailyPCTTV.setText(NumberFormatUtils.format2Decimal(mPortfolioChangeDailyPct) + "%");
+        mPortfolioChangeDailyTV.setText(mUsedCurrency + NumberFormatUtils.format2Decimal(mPortfolioChangeDaily));
 
         return view;
     }
