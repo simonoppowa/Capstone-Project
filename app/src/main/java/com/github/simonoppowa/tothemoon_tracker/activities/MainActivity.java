@@ -40,8 +40,8 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String CRYPTOCOMPARE_BASE_URL = "https://min-api.cryptocompare.com/data/";
-    private static final String CRYPTOCOMPARE_IMAGE_BASE_URL = "https://www.cryptocompare.com/media/";
+    public static final String CRYPTOCOMPARE_API_BASE_URL = "https://min-api.cryptocompare.com/data/";
+    public static final String CRYPTOCOMPARE_BASE_URL = "https://www.cryptocompare.com/";
 
     public static final String CURRENCY_SP_KEY = "currencySharedPreference";
     public static final String DEFAULT_CURRENCY = "USD";
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrofit API call
         retrofit = new Retrofit.Builder()
-                .baseUrl(CRYPTOCOMPARE_BASE_URL)
+                .baseUrl(CRYPTOCOMPARE_API_BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

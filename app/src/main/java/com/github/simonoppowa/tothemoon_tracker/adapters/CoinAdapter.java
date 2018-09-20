@@ -10,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.activities.MainActivity;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.utils.NumberFormatUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -44,10 +46,16 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.coinNameTextView.setText(mCoins.get(position).getName());
-        holder.coinFullNameTextView.setText(mCoins.get(position).getFullName());
-        holder.coin24hChangePctTextView.setText(NumberFormatUtils.format2Decimal(mCoins.get(position).getChange24hPct()));
-        holder.coin24ChangeTextView.setText(NumberFormatUtils.format2Decimal(mCoins.get(position).getChange24h()));
+        Coin selectedCoin = mCoins.get(position);
+
+        Picasso.get()
+                .load(MainActivity.CRYPTOCOMPARE_BASE_URL + selectedCoin.getImageUrl())
+                .into(holder.coinIconImageView);
+
+        holder.coinNameTextView.setText(selectedCoin.getName());
+        holder.coinFullNameTextView.setText(selectedCoin.getFullName());
+        holder.coin24hChangePctTextView.setText(NumberFormatUtils.format2Decimal(selectedCoin.getChange24hPct()));
+        holder.coin24ChangeTextView.setText(NumberFormatUtils.format2Decimal(selectedCoin.getChange24h()));
     }
 
     @Override
@@ -73,7 +81,6 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
-
         }
     }
 }
