@@ -14,6 +14,7 @@ import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioFragment;
+import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioPieChartFragment;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.CoinAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Portfolio;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private PortfolioFragment mPortfolioFragment;
     private Portfolio24hGraphFragment mPortfolioGraphFragment;
     private CoinsInfoFragment mCoinsInfoFragment;
+    private PortfolioPieChartFragment mPortfolioPieChartFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void fetchCoinsInfo(List<Observable<?>> coinInfoRequests) {
+    public void fetchCoinsInfo(final List<Observable<?>> coinInfoRequests) {
 
         // Use RxJava2 to coordinate coinInfoCalls
         Observable.zip(coinInfoRequests,
@@ -165,10 +167,13 @@ public class MainActivity extends AppCompatActivity {
                             mOwnedCoins.add(newCoin);
                         }
 
-                        createPortfolioFragment();
-                        createCoinsInfoFragment();
+                        Portfolio currentPortfolio = calculateTotalPortfolio();
 
-                        return mOwnedCoins;
+                        createPortfolioFragment(currentPortfolio);
+                        createCoinsInfoFragment();
+                        createPieChartFragment(currentPortfolio);
+
+                        return currentPortfolio;
                     }
                 })
                 .subscribe(
@@ -176,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void accept(Object o) throws Exception {
                                 // Successful completion of all requests
-                                createPortfolioFragment();
+                                //createPortfolioFragment();
                             }
                         },
                         new Consumer<Throwable>() {
@@ -230,16 +235,15 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
-    private void createPortfolioFragment() {
+    private void createPortfolioFragment(Portfolio currentPortfolio) {
 
         // Calculate all necessary numbers
         Portfolio portfolio = calculateTotalPortfolio();
         Timber.d("Portfolio created: " + portfolio.getTotalPrice() + ", " + portfolio.getChange24h() + ", " + portfolio.getChange24hPct());
 
         // Create Portfolio Fragment
-        //TODO
-        mPortfolioFragment = PortfolioFragment.newInstance(mUsedCurrency, calculateTotalPortfolio().getTotalPrice(),
-                calculateTotalPortfolio().getChange24h(), calculateTotalPortfolio().getChange24hPct());
+        mPortfolioFragment = PortfolioFragment.newInstance(mUsedCurrency, currentPortfolio.getTotalPrice(),
+                currentPortfolio.getChange24h(), currentPortfolio.getChange24hPct());
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -269,6 +273,17 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.coins_info_fragment_container, mCoinsInfoFragment);
+        ft.commit();
+    }
+
+    private void createPieChartFragment(Portfolio portfolio) {
+
+        // Create CoinsInfoFragment
+        mPortfolioPieChartFragment = PortfolioPieChartFragment.newInstance(mUsedCurrency, portfolio.getTotalPrice(), (ArrayList<Coin>) mOwnedCoins);
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.portfolio_pie_chart_fragment_container, mPortfolioPieChartFragment);
         ft.commit();
     }
 
