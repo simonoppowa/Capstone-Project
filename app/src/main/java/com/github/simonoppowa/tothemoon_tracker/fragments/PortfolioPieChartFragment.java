@@ -1,7 +1,6 @@
 package com.github.simonoppowa.tothemoon_tracker.fragments;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -92,16 +90,17 @@ public class PortfolioPieChartFragment extends Fragment {
         //mChart.setCenterText(generateCenterSpannableText());
 
         mChart.setDrawHoleEnabled(true);
-        mChart.setHoleColor(Color.BLACK);
+        mChart.setHoleColor(R.color.colorPrimary);
 
-        mChart.setTransparentCircleColor(Color.BLACK);
+        mChart.setTransparentCircleColor(R.color.colorPrimary);
         mChart.setTransparentCircleAlpha(110);
 
         mChart.setHoleRadius(58f);
         mChart.setTransparentCircleRadius(61f);
 
         mChart.setDrawCenterText(true);
-        mChart.setCenterText("Henlo");
+        mChart.setCenterText("Portfolio");
+        mChart.setCenterTextColor(R.color.defaultTextColor);
 
         mChart.setRotationAngle(0);
         // enable rotation of the chart by touch
@@ -114,48 +113,26 @@ public class PortfolioPieChartFragment extends Fragment {
         // add a selection listener
         //mChart.setOnChartValueSelectedListener(this);
 
-        setData(4, 100);
+        setData();
 
         mChart.animateY(1400);
         // mChart.spin(2000, 0, 360);
 
-
-        Legend l = mChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-        l.setOrientation(Legend.LegendOrientation.VERTICAL);
-        l.setDrawInside(false);
-        l.setXEntrySpace(7f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(0f);
-
         // entry label styling
-        mChart.setEntryLabelColor(Color.WHITE);
-        // mChart.setEntryLabelTypeface(mTfRegular);
+        mChart.setEntryLabelColor(R.color.defaultTextColor);
         mChart.setEntryLabelTextSize(12f);
-
-
 
     }
 
-    private void setData(int count, float range) {
-
-        float mult = range;
+    private void setData() {
 
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
 
-        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
-        // the chart.
-//        for (int i = 0; i < count ; i++) {
-//            entries.add(new PieEntry((float) ((Math.random() * mult) + mult / 5),
-//                    mParties[i % mParties.length]));
-//        }
-
         for(Coin coin : mCoinList) {
-            entries.add(new PieEntry((float) coin.getCurrentPrice()));
+            entries.add(new PieEntry((float) coin.getCurrentPrice(), coin.getFullName()));
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Election Results");
+        PieDataSet dataSet = new PieDataSet(entries, "Portfolio");
 
         dataSet.setDrawIcons(false);
 
@@ -190,7 +167,7 @@ public class PortfolioPieChartFragment extends Fragment {
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
-        data.setValueTextColor(colors.get(0));
+        data.setValueTextColor(R.color.defaultTextColor);
         //data.setValueTypeface(mTfLight);
         mChart.setData(data);
 
