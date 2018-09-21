@@ -24,7 +24,9 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,8 +41,7 @@ public class PortfolioPieChartFragment extends Fragment {
     private double mTotalPortfolio;
     private ArrayList<Coin> mCoinList;
 
-    private List<Bitmap> coinBitmaps;
-    private List<Palette> mPalettes;
+    private Map<String, Palette> mPalettes;
 
     private int callsRemaining;
 
@@ -73,7 +74,7 @@ public class PortfolioPieChartFragment extends Fragment {
             mTotalPortfolio = getArguments().getDouble(PORTFOLIO_TOTAL_KEY);
             mCoinList = getArguments().getParcelableArrayList(COIN_LIST_KEY);
 
-            mPalettes = new ArrayList<>();
+            mPalettes = new HashMap<>();
         }  else {
         throw new NullPointerException("No bundle was passed to PortfolioPieChartFragment");
         }
@@ -107,7 +108,8 @@ public class PortfolioPieChartFragment extends Fragment {
         //mChart.setCenterText(generateCenterSpannableText());
 
         mChart.setDrawHoleEnabled(true);
-        mChart.setHoleColor(R.color.colorPrimary);
+        mChart.setHoleColor(getResources().getColor(R.color.colorPrimary));
+        mChart.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
         mChart.setTransparentCircleColor(R.color.colorPrimary);
         mChart.setTransparentCircleAlpha(110);
@@ -117,7 +119,7 @@ public class PortfolioPieChartFragment extends Fragment {
 
         mChart.setDrawCenterText(true);
         mChart.setCenterText("Portfolio");
-        mChart.setCenterTextColor(R.color.defaultTextColor);
+        mChart.setCenterTextColor(getResources().getColor(R.color.defaultTextColor));
 
         mChart.setRotationAngle(0);
         // enable rotation of the chart by touch
@@ -153,13 +155,11 @@ public class PortfolioPieChartFragment extends Fragment {
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
 
-        // add a lot of chartColor
-
         ArrayList<Integer> chartColors = new ArrayList<>();
         ArrayList<Integer> textColors = new ArrayList<>();
 
-        for(Palette palette : mPalettes) {
-            Palette.Swatch chartSwatch = palette.getDominantSwatch();
+        for(Coin coin : mCoinList) {
+            Palette.Swatch chartSwatch = mPalettes.get(coin.getName()).getDominantSwatch();
             chartColors.add(chartSwatch.getRgb());
             textColors.add(chartSwatch.getBodyTextColor());
         }
@@ -177,6 +177,9 @@ public class PortfolioPieChartFragment extends Fragment {
         //TODO
         //mChart.setEntryLabelColor(R.color.defaultTextColor);
 
+        // entry label styling
+        // mChart.setEntryLabelTextSize(12f);
+
         mChart.setData(data);
 
         // undo all highlights
@@ -189,19 +192,20 @@ public class PortfolioPieChartFragment extends Fragment {
         callsRemaining = mCoinList.size();
         mTarget = new ArrayList<>();
 
-        for(Coin coin : mCoinList) {
+        for(final Coin coin : mCoinList) {
             String imageUrl = MainActivity.CRYPTOCOMPARE_BASE_URL + coin.getImageUrl() + "?width=50";
             Timber.d(imageUrl);
 
             Target newTarget = new Target() {
                 @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                public void onBitmapLoaded(Bitmap bitmap, final Picasso.LoadedFrom from) {
                     Palette.from(bitmap)
                             .generate(new Palette.PaletteAsyncListener() {
                                 @Override
                                 public void onGenerated(@Nullable Palette palette) {
                                     synchronized (this) {
-                                        mPalettes.add(palette);
+                                        int index = mCoinList.indexOf(coin);
+                                        mPalettes.put(coin.getName(), palette);
                                         callsRemaining--;
                                         Timber.d("Calls remaining: %s", callsRemaining);
                                     }
@@ -210,9 +214,6 @@ public class PortfolioPieChartFragment extends Fragment {
                                         setData();
 
                                         mChart.animateY(1400);
-
-                                        // entry label styling
-                                        mChart.setEntryLabelTextSize(12f);
                                     }
                                 }
                             });
