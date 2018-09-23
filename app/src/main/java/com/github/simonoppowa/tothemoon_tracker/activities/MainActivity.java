@@ -8,6 +8,10 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
@@ -19,6 +23,7 @@ import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.CoinAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Portfolio;
 import com.github.simonoppowa.tothemoon_tracker.models.PortfolioAtTime;
+import com.github.simonoppowa.tothemoon_tracker.models.SampleModel;
 import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.utils.CoinServiceInterface;
 import com.github.simonoppowa.tothemoon_tracker.utils.JsonUtils;
@@ -27,10 +32,14 @@ import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
+import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
+import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import okhttp3.HttpUrl;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -60,6 +69,24 @@ public class MainActivity extends AppCompatActivity {
     private Portfolio24hGraphFragment mPortfolioGraphFragment;
     private CoinsInfoFragment mCoinsInfoFragment;
     private PortfolioPieChartFragment mPortfolioPieChartFragment;
+    @BindView(R.id.main_toolbar)
+    Toolbar mMainToolbar;
+
+    //TODO delete
+
+    private ArrayList<SampleModel> createSampleData() {
+        ArrayList<SampleModel> items = new ArrayList<>();
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        items.add(new SampleModel("Test"));
+        return items;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up libraries
         Timber.plant(new Timber.DebugTree());
         ButterKnife.bind(this);
+
+        setSupportActionBar(mMainToolbar);
 
         mOwnedCoins = new ArrayList<>();
         mCoinsAtTime = new ArrayList<>();
@@ -88,30 +117,46 @@ public class MainActivity extends AppCompatActivity {
             new DatabaseAsyncTask().execute();
         }
 
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
+        return true;
+    }
 
-//        final Call<JsonElement> priceCall = coinServiceInterface.getSingleCoinPrice("BTC", mUsedCurrency);
-//        priceCall.enqueue(new Callback<JsonElement>() {
-//            @Override
-//            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-//                //TODO
-//                if(response.code() == 200) {
-//                    JsonElement jsonElement = response.body();
-//                    Timber.d(jsonElement.getAsJsonObject().get("USD").toString());
-//                } else {
-//                    Timber.d("API Call returned Error: %s", String.valueOf(response.body()));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<JsonElement> call, Throwable t) {
-//                Timber.d("Price call failed");
-//            }
-//        });
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemSelected = item.getItemId();
 
-        // Fragments UI
+        if(itemSelected == R.id.settings_item) {
+            Timber.d("Settings selected");
+        } else {
+            Timber.d("Search selected");
+            provideSimpleDialog();
+        }
 
+        return true;
+    }
+
+    void provideSimpleDialog() {
+        SimpleSearchDialogCompat dialog = new SimpleSearchDialogCompat(MainActivity.this, "Search...",
+                "What are you looking for...?", null, createSampleData(),
+                new SearchResultListener<SampleModel>() {
+                    @Override
+                    public void onSelected(
+                            BaseSearchDialogCompat dialog,
+                            SampleModel item, int position
+                    ) {
+                        Toast.makeText(MainActivity.this, item.getTitle(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        dialog.dismiss();
+                    }
+                }
+        );
+        dialog.show();
     }
 
     @SuppressLint("ApplySharedPref")
@@ -169,19 +214,18 @@ public class MainActivity extends AppCompatActivity {
 
                         Portfolio currentPortfolio = calculateTotalPortfolio();
 
-                        createPortfolioFragment(currentPortfolio);
-                        createCoinsInfoFragment();
-                        createPieChartFragment(currentPortfolio);
-
                         return currentPortfolio;
                     }
                 })
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
-                            public void accept(Object o) throws Exception {
+                            public void accept(Object currentPortfolio) throws Exception {
                                 // Successful completion of all requests
-                                //createPortfolioFragment();
+
+                                createPortfolioFragment((Portfolio) currentPortfolio);
+                                createCoinsInfoFragment();
+                                createPieChartFragment((Portfolio) currentPortfolio);
                             }
                         },
                         new Consumer<Throwable>() {

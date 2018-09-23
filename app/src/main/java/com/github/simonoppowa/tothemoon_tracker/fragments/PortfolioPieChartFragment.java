@@ -126,6 +126,9 @@ public class PortfolioPieChartFragment extends Fragment {
         mChart.setRotationEnabled(true);
         mChart.setHighlightPerTapEnabled(false);
 
+        mChart.setNoDataText("No Data");
+        mChart.setNoDataTextColor(R.color.colorAccent);
+
         // mChart.setUnit(" €");
         // mChart.setDrawUnitsInChart(true);
 
