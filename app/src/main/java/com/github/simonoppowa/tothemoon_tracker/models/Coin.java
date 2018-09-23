@@ -5,7 +5,9 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Coin implements Parcelable {
+import ir.mirrajabi.searchdialog.core.Searchable;
+
+public class Coin implements Parcelable, Searchable{
 
     @SerializedName("Name")
     private String name;
@@ -123,4 +125,9 @@ public class Coin implements Parcelable {
             return new Coin[i];
         }
     };
+
+    @Override
+    public String getTitle() {
+        return fullName;
+    }
 }

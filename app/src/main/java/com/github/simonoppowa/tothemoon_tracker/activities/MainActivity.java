@@ -23,8 +23,8 @@ import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.CoinAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Portfolio;
 import com.github.simonoppowa.tothemoon_tracker.models.PortfolioAtTime;
-import com.github.simonoppowa.tothemoon_tracker.models.SampleModel;
 import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
+import com.github.simonoppowa.tothemoon_tracker.services.CoinSearchDialogCompat;
 import com.github.simonoppowa.tothemoon_tracker.utils.CoinServiceInterface;
 import com.github.simonoppowa.tothemoon_tracker.utils.JsonUtils;
 import com.google.gson.JsonElement;
@@ -37,7 +37,6 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import okhttp3.HttpUrl;
@@ -74,17 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO delete
 
-    private ArrayList<SampleModel> createSampleData() {
-        ArrayList<SampleModel> items = new ArrayList<>();
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
-        items.add(new SampleModel("Test"));
+    private ArrayList<Coin> createSampleData() {
+        ArrayList<Coin> items = new ArrayList<>();
+        items.add(new Coin("ETH", "Ethereum", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
+        items.add(new Coin("BTC", "Bitcoin", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
+        items.add(new Coin("XRP", "Ripple", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
+        items.add(new Coin("LTC", "Litecoin", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
         return items;
     }
 
@@ -134,29 +128,24 @@ public class MainActivity extends AppCompatActivity {
             Timber.d("Settings selected");
         } else {
             Timber.d("Search selected");
-            provideSimpleDialog();
+            provideCustomDialog();
         }
 
         return true;
     }
 
-    void provideSimpleDialog() {
-        SimpleSearchDialogCompat dialog = new SimpleSearchDialogCompat(MainActivity.this, "Search...",
-                "What are you looking for...?", null, createSampleData(),
-                new SearchResultListener<SampleModel>() {
+    void provideCustomDialog() {
+        new CoinSearchDialogCompat<>(this, "Search...", "What are you looking for...", null, createSampleData(),
+                new SearchResultListener<Coin>() {
+
                     @Override
-                    public void onSelected(
-                            BaseSearchDialogCompat dialog,
-                            SampleModel item, int position
-                    ) {
-                        Toast.makeText(MainActivity.this, item.getTitle(),
+                    public void onSelected(BaseSearchDialogCompat dialog, Coin coin, int position) {
+                        Toast.makeText(MainActivity.this, coin.getTitle(),
                                 Toast.LENGTH_SHORT
                         ).show();
                         dialog.dismiss();
                     }
-                }
-        );
-        dialog.show();
+                }).show();
     }
 
     @SuppressLint("ApplySharedPref")
