@@ -10,14 +10,14 @@
     <string name="pref_currency_category_title">Currency Settings</string>
 
     <string name="pref_currency_label_usd">USD</string>
-    <string name="pref_currency_label_eur">USD</string>
+    <string name="pref_currency_label_eur">EUR</string>
     <string name="pref_currency_label_jpy">JPY</string>
     <string name="pref_currency_label_gbp">GBP</string>
 
-    <string name="pref_currency_value_usd">usd</string>
-    <string name="pref_currency_value_eur">eur</string>
-    <string name="pref_currency_value_jpy">jpy</string>
-    <string name="pref_currency_value_gbp">gbp</string>
+    <string name="pref_currency_value_usd">USD</string>
+    <string name="pref_currency_value_eur">EUR</string>
+    <string name="pref_currency_value_jpy">JPY</string>
+    <string name="pref_currency_value_gbp">GBP</string>
 
     <string name="pref_currency_title">Default Currency</string>
     <string name="pref_currency_key" translatable="false">currencyKey</string>

@@ -52,12 +52,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     public static final String CRYPTOCOMPARE_API_BASE_URL = "https://min-api.cryptocompare.com/data/";
     public static final String CRYPTOCOMPARE_BASE_URL = "https://www.cryptocompare.com/";
 
-    public static final String CURRENCY_SP_KEY = "currencySharedPreference";
     public static final String DEFAULT_CURRENCY = "USD";
 
     private static Retrofit retrofit;
@@ -152,6 +151,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
     void provideCustomDialog() {
         mCoinsAvailable = new ArrayList<>();
 
@@ -178,14 +184,16 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ApplySharedPref")
     private void setupSharedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPreferences.contains(CURRENCY_SP_KEY)) {
-            mUsedCurrency = sharedPreferences.getString(CURRENCY_SP_KEY, DEFAULT_CURRENCY);
+        if(sharedPreferences.contains(getString(R.string.pref_currency_key))) {
+            mUsedCurrency = sharedPreferences.getString(getString(R.string.pref_currency_key), DEFAULT_CURRENCY);
         } else {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(CURRENCY_SP_KEY, DEFAULT_CURRENCY);
+            editor.putString(getString(R.string.pref_currency_key), DEFAULT_CURRENCY);
             editor.commit();
             mUsedCurrency = DEFAULT_CURRENCY;
         }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     private void fetchFullCoinsInfo() {
@@ -409,6 +417,14 @@ public class MainActivity extends AppCompatActivity {
     private void startPreferencesActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals(getString(R.string.pref_currency_key))) {
+            mUsedCurrency = (getString(R.string.pref_currency_key));
+            Timber.d("Used Currency changed to %s", mUsedCurrency);
+        }
     }
 
     //TODO
