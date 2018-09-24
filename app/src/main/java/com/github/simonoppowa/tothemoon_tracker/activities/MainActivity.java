@@ -1,7 +1,10 @@
 package com.github.simonoppowa.tothemoon_tracker.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
@@ -25,7 +29,7 @@ import com.github.simonoppowa.tothemoon_tracker.models.Portfolio;
 import com.github.simonoppowa.tothemoon_tracker.models.PortfolioAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.services.CoinSearchDialogCompat;
-import com.github.simonoppowa.tothemoon_tracker.utils.CoinServiceInterface;
+import com.github.simonoppowa.tothemoon_tracker.services.CoinServiceInterface;
 import com.github.simonoppowa.tothemoon_tracker.utils.JsonUtils;
 import com.google.gson.JsonElement;
 
@@ -40,6 +44,8 @@ import io.reactivex.functions.Function;
 import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import okhttp3.HttpUrl;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String mUsedCurrency;
     private List<Coin> mOwnedCoins;
+    private ArrayList<Coin> mCoinsAvailable;
     private List<Transaction> mTransactions;
     private List<List<CoinAtTime>> mCoinsAtTime;
 
@@ -117,6 +124,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
+
+        // Set icon color
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.defaultTextColor), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+
         return true;
     }
 
@@ -126,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(itemSelected == R.id.settings_item) {
             Timber.d("Settings selected");
+            startPreferencesActivity();
         } else {
             Timber.d("Search selected");
             provideCustomDialog();
@@ -135,7 +153,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void provideCustomDialog() {
-        new CoinSearchDialogCompat<>(this, "Search...", "What are you looking for...", null, createSampleData(),
+        mCoinsAvailable = new ArrayList<>();
+
+        CoinSearchDialogCompat compatDialog = new CoinSearchDialogCompat<>(this, "Search...", "What are you looking for...", null, mCoinsAvailable,
                 new SearchResultListener<Coin>() {
 
                     @Override
@@ -145,7 +165,14 @@ public class MainActivity extends AppCompatActivity {
                         ).show();
                         dialog.dismiss();
                     }
-                }).show();
+                });
+
+        compatDialog.show();
+        compatDialog.setLoading(true);
+
+        fetchFullCoinList(compatDialog);
+
+
     }
 
     @SuppressLint("ApplySharedPref")
@@ -268,6 +295,28 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
+    private void fetchFullCoinList(final CoinSearchDialogCompat dialogCompat) {
+
+        CoinServiceInterface coinServiceInterface = retrofit.create(CoinServiceInterface.class);
+
+        Call<JsonElement> call = coinServiceInterface.getFullCoinList();
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                mCoinsAvailable = (ArrayList<Coin>) JsonUtils.getCoinListFromResponse(response.body());
+
+                CoinSearchAdapter coinSearchAdapter = (CoinSearchAdapter) dialogCompat.getAdapter();
+                coinSearchAdapter.setItems(mCoinsAvailable);
+                dialogCompat.setLoading(false);
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void createPortfolioFragment(Portfolio currentPortfolio) {
 
         // Calculate all necessary numbers
@@ -355,6 +404,11 @@ public class MainActivity extends AppCompatActivity {
            portfolioChange24hPct = (portfolioChange24h / portfolio24hAgo)*100;
         }
         return new Portfolio(sum, portfolioChange24h, portfolioChange24hPct);
+    }
+
+    private void startPreferencesActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     //TODO

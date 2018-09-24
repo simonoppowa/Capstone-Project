@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="pref_currency_option_labels">
+        <item>@string/pref_currency_label_usd</item>
+        <item>@string/pref_currency_label_eur</item>
+        <item>@string/pref_currency_label_jpy</item>
+        <item>@string/pref_currency_label_gbp</item>
+    </array>
+
+    <array name="pref_currency_option_values">
+        <item>@string/pref_currency_value_usd</item>
+        <item>@string/pref_currency_value_eur</item>
+        <item>@string/pref_currency_value_jpy</item>
+        <item>@string/pref_currency_value_gbp</item>
+    </array>
+
+</resources>

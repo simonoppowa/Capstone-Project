@@ -2,15 +2,13 @@ package com.github.simonoppowa.tothemoon_tracker.utils;
 
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.CoinAtTime;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import timber.log.Timber;
+import java.util.Map;
 
 public class JsonUtils {
 
@@ -27,7 +25,6 @@ public class JsonUtils {
         double currentPrice = coinPriceDataJsonElement.getAsJsonObject().get("PRICE").getAsDouble();
         double change24hPct = coinPriceDataJsonElement.getAsJsonObject().get("CHANGEPCT24HOUR").getAsDouble();
         double change24h = coinPriceDataJsonElement.getAsJsonObject().get("CHANGE24HOUR").getAsDouble();
-
 
         return new Coin(coinName, fullName, imageUrl, currentPrice, change24hPct, change24h);
     }
@@ -51,5 +48,23 @@ public class JsonUtils {
         }
 
         return coinAtTimeList;
+    }
+
+    public static List<Coin> getCoinListFromResponse(JsonElement responseJson) {
+
+        List<Coin> coinList = new ArrayList<>();
+
+        JsonObject dataJsonArray = responseJson.getAsJsonObject().getAsJsonObject("Data");
+
+        for (Map.Entry<String,JsonElement> entry : dataJsonArray.entrySet()) {
+
+                String coinName = entry.getValue().getAsJsonObject().get("Name").getAsString();
+                String fullName = entry.getValue().getAsJsonObject().get("CoinName").getAsString();
+                //String imageUrl = entry.getValue().getAsJsonObject().get("ImageUrl").getAsString();
+
+                coinList.add(new Coin(coinName, fullName, "", 0, 0, 0));
+        }
+
+        return coinList;
     }
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_currency_category_title">
+
+        <ListPreference
+            android:defaultValue="@string/pref_currency_label_usd"
+            android:entries="@array/pref_currency_option_labels"
+            android:entryValues="@array/pref_currency_option_values"
+            android:key="@string/pref_currency_key"
+            android:title="@string/pref_curreny_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_about_category_title">
+
+        <Preference
+            android:key="about"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="@string/app_name"
+            android:selectable="false"
+            android:persistent="false"
+            android:summary="v0.9"/>
+
+        <Preference
+            android:key="open_source_licenses"
+            android:title="Open-Source-Licenses" />
+
+        <Preference
+            android:key="other_licenses"
+            android:title="Images and Icon Licenses"/>
+
+        <Preference
+            android:key="api"
+            android:title="Powered by CryptoCompare API"
+            android:summary="https://min-api.cryptocompare.com/"/>
+
+        <Preference
+            android:key="developer"
+            android:title="Developer"/>
+
+
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

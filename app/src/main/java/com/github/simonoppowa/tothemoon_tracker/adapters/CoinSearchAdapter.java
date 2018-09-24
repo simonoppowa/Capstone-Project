@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
@@ -83,7 +84,9 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View convertView = mLayoutInflater.inflate(mLayout, parent, false);
+
         convertView.setTag(new ViewHolder(convertView));
+
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
         return viewHolder;
     }
@@ -98,23 +101,26 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
             mViewBinder.bind(holder, object, position);
         }
 
+        Coin coin = (Coin) object;
+
         LinearLayout root = holder.getViewById(R.id.search_root);
-        TextView text = holder.getViewById(R.id.search_coin_text_view);
         RoundedImageView image = holder.getViewById(R.id.search_coin_image_view);
+        TextView fullNameTextView = holder.getViewById(R.id.search_coin_full_name_text_view);
+        TextView nameTextView = holder.getViewById(R.id.search_coin_name_text_view);
 
-
-//        Glide.with(mContext)
-//                .load(((ContactModel) object).getImageUrl())
-//                .asBitmap()
+//        Picasso.get()
+//                .load(coin.getImageUrl())
 //                .into(image);
 
-
-        text.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+        nameTextView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+        fullNameTextView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
 
         if (mSearchTag != null && mHighlightPartsInCommon) {
-            text.setText(StringsHelper.highlightLCS(object.getTitle(), getSearchTag(), Color.parseColor(mHighlightColor)));
+            nameTextView.setText(StringsHelper.highlightLCS(coin.getTitle(), getSearchTag(), Color.parseColor(mHighlightColor)));
+            fullNameTextView.setText(StringsHelper.highlightLCS(coin.getName(), getSearchTag(), Color.parseColor(mHighlightColor)));
         } else {
-            text.setText(object.getTitle());
+            nameTextView.setText(object.getTitle());
+            fullNameTextView.setText(coin.getName());
         }
 
         if (mSearchResultListener != null) {

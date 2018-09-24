@@ -1,11 +1,14 @@
 package com.github.simonoppowa.tothemoon_tracker.services;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Filter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
@@ -13,41 +16,64 @@ import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
 
 import java.util.ArrayList;
 
-import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
+import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
+import ir.mirrajabi.searchdialog.adapters.SearchDialogAdapter;
+import ir.mirrajabi.searchdialog.core.BaseFilter;
 import ir.mirrajabi.searchdialog.core.FilterResultListener;
+import ir.mirrajabi.searchdialog.core.OnPerformFilterListener;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import ir.mirrajabi.searchdialog.core.Searchable;
 
-public class CoinSearchDialogCompat<T extends Searchable> extends BaseSearchDialogCompat<T> {
+public class CoinSearchDialogCompat<T extends Searchable> extends SimpleSearchDialogCompat<T> {
 
     String mTitle;
     String mSearchHint;
     private SearchResultListener<T> mSearchResultListener;
 
+    private TextView mTxtTitle;
+    private EditText mSearchBox;
+    private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
+    private Handler mHandler;
+
     public CoinSearchDialogCompat(Context context, String title, String searchHint,
                                   @Nullable  Filter filter, ArrayList<T> items, SearchResultListener<T> searchResultListener) {
-        super(context, items, filter, null, null);
+        super(context,title, searchHint, filter, items, searchResultListener);
         init(title, searchHint, searchResultListener);
     }
 
-    private void init(String title, String searchHint, SearchResultListener<T> searchResultListener) {
+    private void init(String title, String searchHint,SearchResultListener<T> searchResultListener) {
         mTitle = title;
         mSearchHint = searchHint;
         mSearchResultListener = searchResultListener;
+        setFilterResultListener(new FilterResultListener<T>() {
+            @Override
+            public void onFilter(ArrayList<T> items) {
+                ((SearchDialogAdapter) getAdapter())
+                        .setSearchTag(mSearchBox.getText().toString())
+                        .setItems(items);
+            }
+        });
+        mHandler = new Handler();
     }
-
-
 
     @Override
     protected void getView(View view) {
         setContentView(view);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         setCancelable(true);
-        TextView txtTitle =  view.findViewById(ir.mirrajabi.searchdialog.R.id.txt_title);
-        final EditText searchBox = view.findViewById(getSearchBoxId());
+        mTxtTitle =  view.findViewById(ir.mirrajabi.searchdialog.R.id.txt_title);
+        mSearchBox = view.findViewById(getSearchBoxId());
+        mRecyclerView = view.findViewById(getRecyclerViewId());
+        mProgressBar = view.findViewById(ir.mirrajabi.searchdialog.R.id.progress);
 
-        txtTitle.setText(mTitle);
-        searchBox.setHint(mSearchHint);
+        mProgressBar.setVisibility(View.VISIBLE);
+        setLoading(true);
+
+        mTxtTitle.setText(mTitle);
+        mTxtTitle.setTextColor(view.getContext().getResources().getColor(R.color.colorPrimary));
+        mSearchBox.setHint(mSearchHint);
+        mProgressBar.setIndeterminate(true);
 
         view.findViewById(ir.mirrajabi.searchdialog.R.id.dummy_background)
                 .setOnClickListener(new View.OnClickListener() {
@@ -56,18 +82,47 @@ public class CoinSearchDialogCompat<T extends Searchable> extends BaseSearchDial
                         dismiss();
                     }
                 });
+
         final CoinSearchAdapter adapter = new CoinSearchAdapter(getContext(), R.layout.search_item_adapter, getItems());
         adapter.setSearchResultListener(mSearchResultListener);
         adapter.setSearchDialog(this);
         setFilterResultListener(new FilterResultListener<T>() {
+            //TODO
             @Override
             public void onFilter(ArrayList<T> items) {
                 ((CoinSearchAdapter) getAdapter())
-                        .setSearchTag(searchBox.getText().toString())
+                        .setSearchTag(mSearchBox.getText().toString())
                         .setItems(items);
             }
         });
         setAdapter(adapter);
+        mSearchBox.requestFocus();
+        ((BaseFilter<T>) getFilter()).setOnPerformFilterListener(new OnPerformFilterListener() {
+            @Override
+            public void doBeforeFiltering() {
+                setLoading(true);
+            }
+
+            @Override
+            public void doAfterFiltering() {
+                setLoading(false);
+            }
+        });
+    }
+
+    @Override
+    public void setLoading(final boolean isLoading) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressBar != null) {
+                    mRecyclerView.setVisibility(!isLoading ? View.VISIBLE : View.GONE);
+                }
+                if (mRecyclerView != null) {
+                    mProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+                }
+            }
+        });
     }
 
     public CoinSearchDialogCompat setTitle(String title) {
