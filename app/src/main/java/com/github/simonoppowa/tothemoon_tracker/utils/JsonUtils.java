@@ -60,9 +60,13 @@ public class JsonUtils {
 
                 String coinName = entry.getValue().getAsJsonObject().get("Name").getAsString();
                 String fullName = entry.getValue().getAsJsonObject().get("CoinName").getAsString();
-                //String imageUrl = entry.getValue().getAsJsonObject().get("ImageUrl").getAsString();
+                String imageUrl = "";
+                // Check if image available
+                if(entry.getValue().getAsJsonObject().get("ImageUrl") != null) {
+                    imageUrl = entry.getValue().getAsJsonObject().get("ImageUrl").getAsString();
+                }
 
-                coinList.add(new Coin(coinName, fullName, "", 0, 0, 0));
+                coinList.add(new Coin(coinName, fullName, imageUrl, 0, 0, 0));
         }
 
         return coinList;

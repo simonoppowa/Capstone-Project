@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
@@ -123,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
-
         // Set icon color
         for(int i = 0; i < menu.size(); i++){
             Drawable drawable = menu.getItem(i).getIcon();
@@ -132,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 drawable.setColorFilter(getResources().getColor(R.color.defaultTextColor), PorterDuff.Mode.SRC_ATOP);
             }
         }
-
         return true;
     }
 
@@ -166,9 +163,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                     @Override
                     public void onSelected(BaseSearchDialogCompat dialog, Coin coin, int position) {
-                        Toast.makeText(MainActivity.this, coin.getTitle(),
-                                Toast.LENGTH_SHORT
-                        ).show();
+//                        Toast.makeText(MainActivity.this, coin.getTitle(),
+//                                Toast.LENGTH_SHORT
+//                        ).show();
+                        startAddCoinActivity(coin);
                         dialog.dismiss();
                     }
                 });
@@ -177,8 +175,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         compatDialog.setLoading(true);
 
         fetchFullCoinList(compatDialog);
-
-
     }
 
     @SuppressLint("ApplySharedPref")
@@ -416,6 +412,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private void startPreferencesActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAddCoinActivity(Coin selectedCoin) {
+        Intent intent = new Intent(this, AddTransactionActivity.class);
+        intent.putExtra(AddTransactionActivity.COIN_KEY, selectedCoin);
+
         startActivity(intent);
     }
 

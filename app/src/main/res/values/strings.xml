@@ -2,6 +2,8 @@
     <string name="app_name">ToTheMoon-Tracker</string>
     <string name="version_code">v0.9</string>
 
+    <string name="add_transaction_activity_title">Add Transaction</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Strings related to Settings -->
@@ -35,7 +37,6 @@
     <string name="pref_other_licenses_key" translatable="false">other_licenses</string>
     <string name="pref_cryptocompare_api_key" translatable="false">cryptocompare_api</string>
     <string name="pref_developer_key" translatable="false">developer</string>
-
 
 
 </resources>
