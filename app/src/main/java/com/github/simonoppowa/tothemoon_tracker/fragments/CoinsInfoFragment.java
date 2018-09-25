@@ -1,10 +1,14 @@
 package com.github.simonoppowa.tothemoon_tracker.fragments;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,15 +60,12 @@ public class CoinsInfoFragment extends Fragment {
             mUsedCurrency = getArguments().getString(CURRENCY_KEY);
             mCoins = getArguments().getParcelableArrayList(COIN_LIST_KEY);
         }
-
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_coins_info, container, false);
+        final View view = inflater.inflate(R.layout.fragment_coins_info, container, false);
 
         // Set up Libraries
         Timber.plant(new Timber.DebugTree());
@@ -77,6 +78,40 @@ public class CoinsInfoFragment extends Fragment {
 
         mCoinInfoRecyclerView.setLayoutManager(mLinearLayoutManager);
         mCoinInfoRecyclerView.setAdapter(mCoinAdapter);
+
+        // Create Swipe Listener
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+                final int deletedCoinIndex = viewHolder.getAdapterPosition();
+                final Coin deletedCoin = mCoins.get(deletedCoinIndex);
+                Timber.d("Deleting Transaction: %s", deletedCoin.getFullName());
+                mCoins.remove(deletedCoinIndex);
+
+                mCoinAdapter.notifyDataSetChanged();
+                //TODO Remove from Database
+
+                // Show Undo Snackbar
+                Snackbar snackbar = Snackbar
+                        .make(view, deletedCoin.getFullName() + " removed!", Snackbar.LENGTH_LONG);
+                snackbar.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Undo is selected, restore the deleted item
+                            mCoins.add(deletedCoinIndex, deletedCoin);
+                            mCoinAdapter.notifyDataSetChanged();
+                    }
+                });
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
+            }
+        }).attachToRecyclerView(mCoinInfoRecyclerView);
 
 
         // Inflate the layout for this fragment

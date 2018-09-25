@@ -6,6 +6,8 @@ import android.arch.persistence.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+
 @Entity(tableName = "transaction_table")
 public class Transaction {
 
@@ -23,6 +25,12 @@ public class Transaction {
         this.coinName = coinName;
         this.tradePriceUSD = tradePriceUSD;
         this.quantity = quantity;
+    }
+
+    public Transaction(String coinName, BigDecimal tradePriceUSD, BigDecimal quantity) {
+        this.coinName = coinName;
+        this.tradePriceUSD = tradePriceUSD.longValue();
+        this.quantity = quantity.longValue();
     }
 
     public String getCoinName() {

@@ -431,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     //TODO
-    private class DatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
+    public class DatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {

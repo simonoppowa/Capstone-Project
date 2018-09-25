@@ -3,6 +3,7 @@ package com.github.simonoppowa.tothemoon_tracker.activities;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +11,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.utils.NumberFormatUtils;
 import com.github.simonoppowa.tothemoon_tracker.utils.PicassoUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -92,7 +96,7 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     @OnTextChanged(R.id.add_trade_price_edit_text)
     void onTradePriceTextChanged(CharSequence charSequence, int start, int count, int after) {
-        if(charSequence != null && !charSequence.equals("")) {
+        if(charSequence != null && !charSequence.toString().equals("")) {
             mTradePriceInput = new BigDecimal(charSequence.toString());
             setFullPriceTextView();
         }
@@ -100,7 +104,7 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     @OnTextChanged(R.id.add_quantity_edit_text)
     void onQuantityTextChanged(CharSequence charSequence, int start, int count, int after) {
-        if(charSequence != null && !charSequence.equals("")) {
+        if(charSequence != null && !charSequence.toString().equals("")) {
             mQuantityInput = new BigDecimal(charSequence.toString());
             setFullPriceTextView();
         }
@@ -134,7 +138,11 @@ public class AddTransactionActivity extends AppCompatActivity {
             return true;
         } else {
             // Save button pressed
-            addNewTransactionToDatabase();
+            if(!mTradePriceInput.equals("") && !mQuantityInput.equals("")) {
+                addNewTransactionToDatabase();
+            } else {
+                Toast.makeText(this, "Please input price and quantity", Toast.LENGTH_SHORT).show();
+            }
         }
 
         return false;
@@ -142,5 +150,29 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     private void addNewTransactionToDatabase() {
 
+        new InsertInDatabaseAsyncTask().execute();
+
+        finish();
+    }
+
+    public class InsertInDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Transaction newTransaction = new Transaction(mSelectedCoin.getName(), mTradePriceInput, mQuantityInput);
+
+            TransactionDatabase transactionDatabase = TransactionDatabase.getDatabase(getApplicationContext());
+
+            transactionDatabase.transactionDao().insertTransaction(newTransaction);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            Toast.makeText(AddTransactionActivity.this, mSelectedCoin.getName() + " Transaction added", Toast.LENGTH_SHORT).show();
+        }
     }
 }
