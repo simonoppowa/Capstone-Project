@@ -13,10 +13,12 @@ import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
+import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 
 import java.util.ArrayList;
 
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
+import ir.mirrajabi.searchdialog.SimpleSearchFilter;
 import ir.mirrajabi.searchdialog.adapters.SearchDialogAdapter;
 import ir.mirrajabi.searchdialog.core.BaseFilter;
 import ir.mirrajabi.searchdialog.core.FilterResultListener;
@@ -86,17 +88,23 @@ public class CoinSearchDialogCompat<T extends Searchable> extends SimpleSearchDi
         final CoinSearchAdapter adapter = new CoinSearchAdapter(getContext(), R.layout.search_item_adapter, getItems());
         adapter.setSearchResultListener(mSearchResultListener);
         adapter.setSearchDialog(this);
-        setFilterResultListener(new FilterResultListener<T>() {
-            //TODO
+
+        FilterResultListener<Coin> filterResultListener = new FilterResultListener<Coin>() {
             @Override
-            public void onFilter(ArrayList<T> items) {
+            public void onFilter(ArrayList<Coin> coins) {
                 ((CoinSearchAdapter) getAdapter())
                         .setSearchTag(mSearchBox.getText().toString())
-                        .setItems(items);
+                        .setItems(coins);
             }
-        });
+        };
+        setFilterResultListener((FilterResultListener<T>) filterResultListener);
+
         setAdapter(adapter);
         mSearchBox.requestFocus();
+
+        SimpleSearchFilter<Coin> simpleSearchFilter = new SimpleSearchFilter<Coin>(adapter.getItems(), filterResultListener);
+        setFilter(simpleSearchFilter);
+
         ((BaseFilter<T>) getFilter()).setOnPerformFilterListener(new OnPerformFilterListener() {
             @Override
             public void doBeforeFiltering() {

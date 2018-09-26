@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
@@ -41,6 +40,7 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import ir.mirrajabi.searchdialog.SimpleSearchFilter;
 import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import okhttp3.HttpUrl;
@@ -309,6 +309,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                 CoinSearchAdapter coinSearchAdapter = (CoinSearchAdapter) dialogCompat.getAdapter();
                 coinSearchAdapter.setItems(mCoinsAvailable);
+
+                dialogCompat.setFilter(new SimpleSearchFilter<>(mCoinsAvailable, dialogCompat.getFilterResultListener()));
                 dialogCompat.setLoading(false);
             }
 
