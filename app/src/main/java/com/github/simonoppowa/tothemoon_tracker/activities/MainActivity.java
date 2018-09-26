@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
+import com.github.simonoppowa.tothemoon_tracker.databases.GetDatabaseAsyncTask;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
@@ -51,7 +52,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, GetDatabaseAsyncTask.OnDatabaseTaskCompleted{
 
     public static final String CRYPTOCOMPARE_API_BASE_URL = "https://min-api.cryptocompare.com/data/";
     public static final String CRYPTOCOMPARE_BASE_URL = "https://www.cryptocompare.com/";
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         // Room DB
         if(mTransactions == null) {
-            new DatabaseAsyncTask().execute();
+            new GetDatabaseAsyncTask(this).execute(transactionDatabase);
         }
 
     }
@@ -232,9 +233,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             mOwnedCoins.add(newCoin);
                         }
 
-                        Portfolio currentPortfolio = calculateTotalPortfolio();
-
-                        return currentPortfolio;
+                        return calculateTotalPortfolio(mOwnedCoins, mTransactions);
                     }
                 })
                 .subscribe(
@@ -242,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             @Override
                             public void accept(Object currentPortfolio) throws Exception {
                                 // Successful completion of all requests
-
                                 createPortfolioFragment((Portfolio) currentPortfolio);
                                 createCoinsInfoFragment();
                                 createPieChartFragment((Portfolio) currentPortfolio);
@@ -324,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void createPortfolioFragment(Portfolio currentPortfolio) {
 
         // Calculate all necessary numbers
-        Portfolio portfolio = calculateTotalPortfolio();
+        Portfolio portfolio = calculateTotalPortfolio(mOwnedCoins, mTransactions);
         Timber.d("Portfolio created: " + portfolio.getTotalPrice() + ", " + portfolio.getChange24h() + ", " + portfolio.getChange24hPct());
 
         // Create Portfolio Fragment
@@ -393,14 +391,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         return portfoliosAtTime;
     }
 
-    private Portfolio calculateTotalPortfolio() {
+    public static Portfolio calculateTotalPortfolio(List<Coin> coinList, List<Transaction> transactionList) {
         //TODO better search, BigDecimal Calc
         double sum = 0.00;
         double portfolioChange24h = 0.00;
         double portfolioChange24hPct = 0.00;
-        for(Coin coin : mOwnedCoins) {
-            Transaction coinTransaction = mTransactions
-                    .get(mTransactions.indexOf(
+        for(Coin coin : coinList) {
+            Transaction coinTransaction = transactionList
+                    .get(transactionList.indexOf(
                             new Transaction(coin.getName(), 0, 0)));
             sum+=(coin.getCurrentPrice()*coinTransaction.getQuantity());
             portfolioChange24h+=(coin.getChange24h()*coinTransaction.getQuantity());
@@ -430,26 +428,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    //TODO
-    public class DatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-//            Transaction transaction = new Transaction("ETH", 1, 2.32);
-//
-//            transactionDatabase.transactionDao().insertTransaction(transaction);
-
-            List<Transaction> transactionList = transactionDatabase.transactionDao().getAllTransactions();
-
-            for(Transaction t : transactionList) {
-                Timber.d(t.getCoinName());
-            }
-
-            mTransactions = transactionList;
-            fetchFullCoinsInfo();
-
-            return null;
-        }
+    @Override
+    public void onDatabaseTaskCompleted(List<Transaction> transactions) {
+        mTransactions = transactions;
+        fetchFullCoinsInfo();
     }
 }

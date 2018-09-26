@@ -37,6 +37,8 @@
     <string name="pref_other_licenses_key" translatable="false">other_licenses</string>
     <string name="pref_cryptocompare_api_key" translatable="false">cryptocompare_api</string>
     <string name="pref_developer_key" translatable="false">developer</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 
 </resources>
