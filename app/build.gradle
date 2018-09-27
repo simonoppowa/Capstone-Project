@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
@@ -35,6 +36,9 @@ dependencies {
     implementation "com.android.support:palette-v7:$supportLibVersion"
     implementation "com.android.support:preference-v7:$supportLibVersion"
 
+    implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
+    implementation 'com.google.firebase:firebase-perf:16.1.0'
 
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     implementation 'com.android.support:support-v4:28.0.0-rc02'
@@ -66,3 +70,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
     testImplementation "android.arch.persistence.room:testing:$roomVersion"
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.firebase-perf'
