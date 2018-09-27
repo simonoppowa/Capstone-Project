@@ -22,6 +22,7 @@ import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.PortfolioPieChartFragment;
+import com.github.simonoppowa.tothemoon_tracker.fragments.RocketImageFragment;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.CoinAtTime;
 import com.github.simonoppowa.tothemoon_tracker.models.Portfolio;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private Portfolio24hGraphFragment mPortfolioGraphFragment;
     private CoinsInfoFragment mCoinsInfoFragment;
     private PortfolioPieChartFragment mPortfolioPieChartFragment;
+    private RocketImageFragment mRocketImageFragment;
     @BindView(R.id.main_toolbar)
     Toolbar mMainToolbar;
 
@@ -230,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             @Override
                             public void accept(Object currentPortfolio) throws Exception {
                                 // Successful completion of all requests
+                                createRocketImageFragment(((Portfolio) currentPortfolio).getChange24hPct());
                                 createPortfolioFragment((Portfolio) currentPortfolio);
                                 createCoinsInfoFragment();
                                 createPieChartFragment((Portfolio) currentPortfolio);
@@ -308,6 +311,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
             }
         });
+    }
+
+    private void createRocketImageFragment(double change24hPct) {
+        mRocketImageFragment = RocketImageFragment.newInstance(change24hPct);
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.rocket_image_fragment_container, mRocketImageFragment);
+        ft.commit();
     }
 
     private void createPortfolioFragment(Portfolio currentPortfolio) {
