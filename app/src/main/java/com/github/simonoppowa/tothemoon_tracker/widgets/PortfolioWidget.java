@@ -158,11 +158,6 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                             }
                         }
                 );
-
-
-
-
-
     }
 
     @SuppressLint("ApplySharedPref")

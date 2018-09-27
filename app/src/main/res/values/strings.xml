@@ -28,7 +28,7 @@
 
     <string name="pref_about_category_title">About</string>
     <string name="pref_open_source_licenses_title">Open-Source-Licenses</string>
-    <string name="pref_other_licenses_title">Images and Icon Licenses</string>
+    <string name="pref_other_licenses_title">Icons and Fonts Licenses</string>
     <string name="pref_cryptocompare_api_title">Powered by CryptoCompare API</string>
     <string name="pref_cryptocompare_api_url" translatable="false">https://min-api.cryptocompare.com</string>
     <string name="pref_developer_title">Developer</string>

@@ -12,13 +12,45 @@ import android.support.v7.preference.PreferenceScreen;
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.activities.MainActivity;
 
+import java.util.Objects;
+
+import de.psdev.licensesdialog.LicensesDialog;
+import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
+import de.psdev.licensesdialog.licenses.EclipsePublicLicense10;
+import de.psdev.licensesdialog.licenses.SILOpenFontLicense11;
+import de.psdev.licensesdialog.model.Notice;
+import de.psdev.licensesdialog.model.Notices;
+
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
+    private Preference openSourceLibraryPreference;
+    private Preference otherLicenses;
+
+    private ApacheSoftwareLicense20 mApacheSoftwareLicense = new ApacheSoftwareLicense20();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.pref_tothemoon);
+
+        openSourceLibraryPreference = findPreference(getString(R.string.pref_open_source_licenses_key));
+        otherLicenses = findPreference(getString(R.string.pref_other_licenses_key));
+
+        openSourceLibraryPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showOpenSourceLibraryLicences();
+                return true;
+            }
+        });
+
+        otherLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showOtherLicenses();
+                return true;
+            }
+        });
 
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
         PreferenceScreen prefScreen = getPreferenceScreen();
@@ -73,5 +105,44 @@ public class SettingsFragment extends PreferenceFragmentCompat
         super.onDestroy();
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    private void showOpenSourceLibraryLicences() {
+        final Notices notices = new Notices();
+        notices.addNotice(new Notice("The Android Open Source Project", "", " Copyright (C) 2011 The Android Open Source Project", mApacheSoftwareLicense));
+
+        notices.addNotice(new Notice("Timber", "https://github.com/JakeWharton/timber", "Copyright 2013 Jake Wharton", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("Butterknife", "https://github.com/JakeWharton/butterknife", "Copyright 2013 Jake Wharton", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("Picasso", "https://github.com/square/picasso", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("RoundedImageView", "https://github.com/vinc3m1/RoundedImageView", "Copyright 2017 Vincent Mi", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("GSON", "https://github.com/google/gson", "Copyright 2008 Google Inc.", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("Retrofit", "https://github.com/square/retrofit", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("Retrofit GSON Converter", "https://github.com/square/retrofit/tree/master/retrofit-converters/gson", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("Retrofit RxJava2 Adapter", "https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("MPAndroidChart", "https://github.com/PhilJay/MPAndroidChart", "Copyright 2018 Philipp Jahoda", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("search-dialog", "https://github.com/mirrajabi/search-dialog", "Copyright 2018 Philipp Jahoda", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("LicensesDialog", "https://github.com/PSDev/LicensesDialog", "Copyright 2013-2017 Philip Schiffer", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("LicensesDialog", "https://github.com/PSDev/LicensesDialog", "Copyright 2013-2017 Philip Schiffer", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("JUnit", "https://junit.org/", "Copyright © 2002-2018 JUnit", new EclipsePublicLicense10()));
+
+        new LicensesDialog.Builder(Objects.requireNonNull(getContext()))
+                .setNotices(notices)
+                .setDividerColorId(R.color.colorPrimary)
+                .build()
+                .show();
+    }
+
+    private void showOtherLicenses() {
+        final Notices notices = new Notices();
+
+        notices.addNotice(new Notice("Rocket Icon", "https://www.flaticon.com/free-icon/rocket_214337", "designed by Pixel Buddha from Flaticon", null));
+        notices.addNotice(new Notice("Moon Icon", "https://www.flaticon.com/free-icon/moon_1137453", "designed by Smashicons from Flaticon", null));
+        notices.addNotice(new Notice("Aldrich Font", "https://fonts.google.com/specimen/Aldrich?selection.family=Aldrich", "Copyright dMADType", new SILOpenFontLicense11()));
+
+        new LicensesDialog.Builder(Objects.requireNonNull(getContext()))
+                .setNotices(notices)
+                .setDividerColorId(R.color.colorPrimary)
+                .build()
+                .show();
     }
 }
