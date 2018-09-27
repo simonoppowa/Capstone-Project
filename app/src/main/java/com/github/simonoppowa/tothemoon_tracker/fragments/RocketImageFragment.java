@@ -17,7 +17,6 @@ import timber.log.Timber;
 
 public class RocketImageFragment extends Fragment {
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String DAILY_CHANGE_PCT = "dailyChangePct";
 
     private double mDailyChangePct;
@@ -61,5 +60,4 @@ public class RocketImageFragment extends Fragment {
 
         return view;
     }
-
 }

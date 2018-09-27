@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -53,7 +54,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, GetDatabaseAsyncTask.OnDatabaseTaskCompleted{
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
+        GetDatabaseAsyncTask.OnDatabaseTaskCompleted, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String CRYPTOCOMPARE_API_BASE_URL = "https://min-api.cryptocompare.com/data/";
     public static final String CRYPTOCOMPARE_BASE_URL = "https://www.cryptocompare.com/";
@@ -78,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private RocketImageFragment mRocketImageFragment;
     @BindView(R.id.main_toolbar)
     Toolbar mMainToolbar;
+    @BindView(R.id.swipe_container)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         // Set up libraries
         Timber.plant(new Timber.DebugTree());
         ButterKnife.bind(this);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         setSupportActionBar(mMainToolbar);
 
@@ -107,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if(mTransactions == null) {
             new GetDatabaseAsyncTask(this).execute(transactionDatabase);
         }
-
     }
 
     @Override
@@ -138,6 +143,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
 
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -182,6 +192,22 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    public void reload() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.remove(mRocketImageFragment);
+        ft.remove(mPortfolioFragment);
+        ft.remove(mPortfolioGraphFragment);
+        ft.remove(mCoinsInfoFragment);
+        ft.remove(mPortfolioPieChartFragment);
+        ft.commit();
+
+        mOwnedCoins = new ArrayList<>();
+
+        new GetDatabaseAsyncTask(this).execute(transactionDatabase);
     }
 
     private void fetchFullCoinsInfo() {
@@ -436,5 +462,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onDatabaseTaskCompleted(List<Transaction> transactions) {
         mTransactions = transactions;
         fetchFullCoinsInfo();
+    }
+
+    @Override
+    public void onRefresh() {
+        reload();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }
