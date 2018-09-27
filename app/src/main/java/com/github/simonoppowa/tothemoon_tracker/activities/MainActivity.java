@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private List<Transaction> mTransactions;
     private List<List<CoinAtTime>> mCoinsAtTime;
 
+    private boolean mRefreshOnResume;
+
     private PortfolioFragment mPortfolioFragment;
     private Portfolio24hGraphFragment mPortfolioGraphFragment;
     private CoinsInfoFragment mCoinsInfoFragment;
@@ -95,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         setSupportActionBar(mMainToolbar);
+        mMainToolbar.setTitle(R.string.app_name_short);
+        mMainToolbar.setTitleTextColor(getResources().getColor(R.color.defaultTextColor));
 
         mOwnedCoins = new ArrayList<>();
         mCoinsAtTime = new ArrayList<>();
@@ -148,6 +152,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onResume() {
         super.onResume();
+        if(mRefreshOnResume) {
+            refresh();
+            mRefreshOnResume = false;
+        }
     }
 
     @Override
@@ -194,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    public void reload() {
+    public void refresh() {
         FragmentManager fm = getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
@@ -453,8 +461,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.pref_currency_key))) {
-            mUsedCurrency = (getString(R.string.pref_currency_key));
+            mUsedCurrency = sharedPreferences.getString(key, getString(R.string.pref_currency_value_usd));
             Timber.d("Used Currency changed to %s", mUsedCurrency);
+            mRefreshOnResume = true;
         }
     }
 
@@ -466,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onRefresh() {
-        reload();
+        refresh();
         mSwipeRefreshLayout.setRefreshing(false);
     }
 }

@@ -151,7 +151,6 @@ public class AddTransactionActivity extends AppCompatActivity {
     private void addNewTransactionToDatabase() {
 
         new InsertInDatabaseAsyncTask().execute();
-
         finish();
     }
 

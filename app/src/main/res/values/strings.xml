@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ToTheMoon-Tracker</string>
+    <string name="app_name_short">ToTheMoon</string>
     <string name="version_code">v0.9</string>
 
     <string name="add_transaction_activity_title">Add Transaction</string>
