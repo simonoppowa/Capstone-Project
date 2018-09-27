@@ -25,6 +25,9 @@ public interface TransactionDao {
     @Delete
     void deleteTransaction(Transaction transaction);
 
+    @Query("DELETE FROM transaction_table WHERE coin_name=:coinName")
+    void deleteTransactionWithPK(String coinName);
+
     @Query("DELETE FROM transaction_table")
     void deleteAllTransactions();
 }

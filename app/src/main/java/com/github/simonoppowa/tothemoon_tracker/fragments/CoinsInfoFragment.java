@@ -3,6 +3,7 @@ package com.github.simonoppowa.tothemoon_tracker.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -15,10 +16,14 @@ import android.view.ViewGroup;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.adapters.CoinAdapter;
+import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,21 +100,56 @@ public class CoinsInfoFragment extends Fragment {
                 mCoins.remove(deletedCoinIndex);
 
                 mCoinAdapter.notifyDataSetChanged();
-                //TODO Remove from Database
 
-                // Show Undo Snackbar
-                Snackbar snackbar = Snackbar
-                        .make(view, deletedCoin.getFullName() + " removed!", Snackbar.LENGTH_LONG);
-                snackbar.setAction("UNDO", new View.OnClickListener() {
+
+                final TransactionDatabase transactionDatabase = TransactionDatabase.getDatabase(getContext());
+                // Delete Transaction in other thread
+                Executor deleteExecutor = Executors.newSingleThreadExecutor();
+                deleteExecutor.execute(new Runnable() {
                     @Override
-                    public void onClick(View view) {
-                        // Undo is selected, restore the deleted item
-                            mCoins.add(deletedCoinIndex, deletedCoin);
-                            mCoinAdapter.notifyDataSetChanged();
+                    public void run() {
+                        final Transaction deletedTransaction = transactionDatabase.transactionDao()
+                                .getSingleTransaction(deletedCoin.getName());
+
+                        transactionDatabase.transactionDao().deleteTransactionWithPK(deletedCoin.getName());
+
+                        // Show Undo Snackbar
+                        Snackbar snackbar = Snackbar
+                                .make(view, deletedCoin.getFullName() + " removed!", Snackbar.LENGTH_LONG);
+                        snackbar.setAction("UNDO", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // Undo is selected, restore the deleted item on new thread
+
+                                // Get a handler that can be used to post to the main thread
+                                final Handler mainHandler = new Handler(getContext().getMainLooper());
+
+                                final Runnable onPostExecute = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mCoinAdapter.notifyDataSetChanged();
+                                    }
+                                };
+
+                                Executor restoreExecutor = Executors.newSingleThreadExecutor();
+                                restoreExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        mCoins.add(deletedCoinIndex, deletedCoin);
+                                        transactionDatabase.transactionDao().insertTransaction(deletedTransaction);
+
+                                        mainHandler.post(onPostExecute);
+                                    }
+                                });
+
+                            }});
+                        snackbar.setActionTextColor(Color.YELLOW);
+                        snackbar.show();
                     }
                 });
-                snackbar.setActionTextColor(Color.YELLOW);
-                snackbar.show();
+
+
             }
         }).attachToRecyclerView(mCoinInfoRecyclerView);
 

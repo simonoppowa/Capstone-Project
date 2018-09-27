@@ -77,17 +77,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @BindView(R.id.main_toolbar)
     Toolbar mMainToolbar;
 
-    //TODO delete
-
-    private ArrayList<Coin> createSampleData() {
-        ArrayList<Coin> items = new ArrayList<>();
-        items.add(new Coin("ETH", "Ethereum", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
-        items.add(new Coin("BTC", "Bitcoin", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
-        items.add(new Coin("XRP", "Ripple", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
-        items.add(new Coin("LTC", "Litecoin", "https://randomuser.me/api/portraits/women/93.jpg", 0, 0, 0));
-        return items;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
