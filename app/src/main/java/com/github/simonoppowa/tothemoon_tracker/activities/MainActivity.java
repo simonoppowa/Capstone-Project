@@ -71,15 +71,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private List<Coin> mOwnedCoins;
     private ArrayList<Coin> mCoinsAvailable;
     private List<Transaction> mTransactions;
-    private List<List<CoinAtTime>> mCoinsAtTime;
 
     private boolean mRefreshOnResume;
 
+    private RocketImageFragment mRocketImageFragment;
     private PortfolioFragment mPortfolioFragment;
     private Portfolio24hGraphFragment mPortfolioGraphFragment;
     private CoinsInfoFragment mCoinsInfoFragment;
     private PortfolioPieChartFragment mPortfolioPieChartFragment;
-    private RocketImageFragment mRocketImageFragment;
     @BindView(R.id.main_toolbar)
     Toolbar mMainToolbar;
     @BindView(R.id.swipe_container)
@@ -101,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         mMainToolbar.setTitleTextColor(getResources().getColor(R.color.defaultTextColor));
 
         mOwnedCoins = new ArrayList<>();
-        mCoinsAtTime = new ArrayList<>();
         setupSharedPreferences();
 
         transactionDatabase = TransactionDatabase.getDatabase(getApplicationContext());
@@ -229,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 Observable<JsonElement> coinInfoCall = mCoinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency, 0);
                 coinInfoRequests.add(coinInfoCall);
 
-                Observable<Response<JsonElement>> coin24hInfoCall = mCoinServiceInterface.get24hCoinChange(transaction.getCoinName(), mUsedCurrency, 24);
+                Observable<Response<JsonElement>> coin24hInfoCall = mCoinServiceInterface.get24hCoinChange(transaction.getCoinName(), mUsedCurrency, 23);
                 coin24hInfoRequest.add(coin24hInfoCall);
             }
 
@@ -291,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                     @Override
                     public Object apply(Object[] objects) {
+                        List<List<CoinAtTime>> coinsAtTime = new ArrayList<>();
 
                         for(Object response : objects) {
 
@@ -301,16 +300,17 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             JsonElement jsonElement = ((Response<JsonElement>) response).body();
 
                             List<CoinAtTime> newCoinAtTime = JsonUtils.getCoinAtTimeListFromResponse(jsonElement, url.queryParameter("fsym"));
-                            mCoinsAtTime.add(newCoinAtTime);
+                            coinsAtTime.add(newCoinAtTime);
                         }
-                        return mCoinsAtTime;
+                        return coinsAtTime;
                     }
                 })
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
                             public void accept(Object o) throws Exception {
-                                List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(mCoinsAtTime);
+                                List<List<CoinAtTime>> coinsatTime = (List<List<CoinAtTime>>) o;
+                                List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(coinsatTime);
                                 create24hGraphFragment(portfoliosAtTime);
                             }
                         },
@@ -417,7 +417,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             double sum = 0;
             long time = coinsAtTime.get(0).get(i).getAtTime();
             while (j  < coinsAtTime.size()) {
-                sum+=coinsAtTime.get(j).get(i).getCurrentPrice();
+                Transaction coinTransaction = mTransactions.get(mTransactions.indexOf(new Transaction(coinsAtTime.get(j).get(0).getName(),
+                        0, 0)));
+                sum+=(coinsAtTime.get(j).get(i).getCurrentPrice()*coinTransaction.getQuantity());
                 j++;
             }
             PortfolioAtTime portfolioAtTime = new PortfolioAtTime(sum, 0, 0, time);
@@ -435,9 +437,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         double portfolioChange24h = 0.00;
         double portfolioChange24hPct = 0.00;
         for(Coin coin : coinList) {
-            Transaction coinTransaction = transactionList
-                    .get(transactionList.indexOf(
-                            new Transaction(coin.getName(), 0, 0)));
+            Transaction coinTransaction = transactionList.get(transactionList.indexOf(new Transaction(coin.getName(),
+                    0, 0)));
             sum+=(coin.getCurrentPrice()*coinTransaction.getQuantity());
             portfolioChange24h+=(coin.getChange24h()*coinTransaction.getQuantity());
            double portfolio24hAgo = sum + portfolioChange24h;

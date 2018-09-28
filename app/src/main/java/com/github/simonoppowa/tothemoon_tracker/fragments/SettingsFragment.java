@@ -1,6 +1,8 @@
 package com.github.simonoppowa.tothemoon_tracker.fragments;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.ListPreference;
@@ -25,7 +27,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
     private Preference openSourceLibraryPreference;
-    private Preference otherLicenses;
+    private Preference otherLicensesPreference;
+    private Preference cryptocompareApiPreference;
 
     private ApacheSoftwareLicense20 mApacheSoftwareLicense = new ApacheSoftwareLicense20();
 
@@ -34,7 +37,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         addPreferencesFromResource(R.xml.pref_tothemoon);
 
         openSourceLibraryPreference = findPreference(getString(R.string.pref_open_source_licenses_key));
-        otherLicenses = findPreference(getString(R.string.pref_other_licenses_key));
+        otherLicensesPreference = findPreference(getString(R.string.pref_other_licenses_key));
+        cryptocompareApiPreference = findPreference(getString(R.string.pref_cryptocompare_api_key));
 
         openSourceLibraryPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -44,10 +48,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
             }
         });
 
-        otherLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        otherLicensesPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 showOtherLicenses();
+                return true;
+            }
+        });
+
+        cryptocompareApiPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showCryptoCompareSite();
                 return true;
             }
         });
@@ -91,7 +103,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             }
         }
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -144,5 +155,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .setDividerColorId(R.color.colorPrimary)
                 .build()
                 .show();
+    }
+
+    private void showCryptoCompareSite() {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(getString(R.string.pref_cryptocompare_api_url)));
+        startActivity(i);
     }
 }
