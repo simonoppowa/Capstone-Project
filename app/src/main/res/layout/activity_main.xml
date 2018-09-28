@@ -27,30 +27,35 @@
 
             </android.support.v7.widget.Toolbar>
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/rocket_image_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/portfolio_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/portfolio_graph_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/coins_info_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/portfolio_pie_chart_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
 
         </LinearLayout>
 

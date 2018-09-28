@@ -171,9 +171,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                     @Override
                     public void onSelected(BaseSearchDialogCompat dialog, Coin coin, int position) {
-//                        Toast.makeText(MainActivity.this, coin.getTitle(),
-//                                Toast.LENGTH_SHORT
-//                        ).show();
                         startAddCoinActivity(coin);
                         dialog.dismiss();
                     }
@@ -390,7 +387,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         // Create CoinsInfoFragment
         mCoinsInfoFragment = CoinsInfoFragment.newInstance(mUsedCurrency, (ArrayList<Coin>) mOwnedCoins, mTransactions);
-
         FragmentManager fm = getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
