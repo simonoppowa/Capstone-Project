@@ -1,39 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="50dp">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/coin_icon_image_view"
         android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@mipmap/ic_launcher_round"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:riv_corner_radius="30dip"
-        android:layout_marginEnd="4dp"/>
+        tools:src="@mipmap/ic_launcher_round" />
 
     <TextView
         android:id="@+id/coin_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"/>
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/coin_icon_image_view"
+        app:layout_constraintStart_toEndOf="@+id/coin_icon_image_view"
+        app:layout_constraintTop_toTopOf="@+id/coin_icon_image_view"
+        tools:text="BTC" />
 
     <TextView
         android:id="@+id/coin_full_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"/>
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/coin_icon_image_view"
+        app:layout_constraintStart_toEndOf="@+id/coin_name_text_view"
+        app:layout_constraintTop_toTopOf="@+id/coin_icon_image_view"
+        tools:text="Ethereum" />
 
     <TextView
         android:id="@+id/coin_24hchange_pct_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"/>
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/coin_icon_image_view"
+        app:layout_constraintEnd_toStartOf="@+id/coin_24change_text_view"
+        app:layout_constraintTop_toTopOf="@+id/coin_icon_image_view"
+        tools:text="+1,23%" />
 
     <TextView
         android:id="@+id/coin_24change_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/coin_icon_image_view"
+        app:layout_constraintTop_toTopOf="@+id/coin_icon_image_view"
+        tools:text="USD 34,23" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
