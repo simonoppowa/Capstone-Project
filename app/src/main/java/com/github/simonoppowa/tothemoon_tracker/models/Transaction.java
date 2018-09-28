@@ -3,13 +3,15 @@ package com.github.simonoppowa.tothemoon_tracker.models;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
 @Entity(tableName = "transaction_table")
-public class Transaction {
+public class Transaction implements Parcelable{
 
     @PrimaryKey
     @NotNull
@@ -31,6 +33,15 @@ public class Transaction {
         this.coinName = coinName;
         this.tradePriceUSD = tradePriceUSD.longValue();
         this.quantity = quantity.longValue();
+    }
+
+    /**
+     * Parcelable constructor
+     */
+    private Transaction(Parcel input) {
+        coinName = input.readString();
+        tradePriceUSD = input.readLong();
+        quantity = input.readDouble();
     }
 
     public String getCoinName() {
@@ -66,4 +77,29 @@ public class Transaction {
         }
         return false;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(coinName);
+        parcel.writeLong(tradePriceUSD);
+        parcel.writeDouble(quantity);
+    }
+
+    public static final Parcelable.Creator<Transaction> CREATOR = new Parcelable.Creator<Transaction>() {
+
+        @Override
+        public Transaction createFromParcel(Parcel parcel) {
+            return new Transaction(parcel);
+        }
+
+        @Override
+        public Transaction[] newArray(int i) {
+            return new Transaction[i];
+        }
+    };
 }

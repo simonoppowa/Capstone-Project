@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import ir.mirrajabi.searchdialog.core.Searchable;
 
-public class Coin implements Parcelable, Searchable{
+public class Coin implements Parcelable, Searchable {
 
     @SerializedName("Name")
     private String name;
@@ -104,6 +104,11 @@ public class Coin implements Parcelable, Searchable{
     }
 
     @Override
+    public String getTitle() {
+        return fullName;
+    }
+
+    @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(name);
         parcel.writeString(fullName);
@@ -126,8 +131,4 @@ public class Coin implements Parcelable, Searchable{
         }
     };
 
-    @Override
-    public String getTitle() {
-        return fullName;
-    }
 }

@@ -10,11 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
-import com.github.simonoppowa.tothemoon_tracker.activities.MainActivity;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.github.simonoppowa.tothemoon_tracker.utils.NumberFormatUtils;
+import com.github.simonoppowa.tothemoon_tracker.utils.PicassoUtils;
 import com.squareup.picasso.Picasso;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,10 +26,14 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
 
     private final Context context;
     private List<Coin> mCoins;
+    private List<Transaction> mTransactions;
+    private String mUsedCurrency;
 
-    public CoinAdapter(Context context, List<Coin> coins) {
+    public CoinAdapter(Context context, List<Coin> coins, List<Transaction> transactions, String currency) {
         this.context = context;
         mCoins = coins;
+        mTransactions = transactions;
+        mUsedCurrency = currency;
     }
 
     public void setCoinList(List<Coin> coins) {
@@ -47,15 +53,17 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Coin selectedCoin = mCoins.get(position);
+        Transaction selectedTransaction = mTransactions.get(mTransactions.indexOf(new Transaction(selectedCoin.getName(), 0, 0)));
+        BigDecimal fullValueChange24h = new BigDecimal(selectedCoin.getChange24h()* selectedTransaction.getQuantity());
 
         Picasso.get()
-                .load(MainActivity.CRYPTOCOMPARE_BASE_URL + selectedCoin.getImageUrl())
+                .load(PicassoUtils.getFullCoinImageUrl(selectedCoin.getImageUrl()))
                 .into(holder.coinIconImageView);
 
         holder.coinNameTextView.setText(selectedCoin.getName());
         holder.coinFullNameTextView.setText(selectedCoin.getFullName());
-        holder.coin24hChangePctTextView.setText(NumberFormatUtils.format2Decimal(selectedCoin.getChange24hPct()));
-        holder.coin24ChangeTextView.setText(NumberFormatUtils.format2Decimal(selectedCoin.getChange24h()));
+        holder.coin24hChangePctTextView.setText(NumberFormatUtils.format2Decimal(selectedCoin.getChange24hPct()) + "%");
+        holder.coin24ChangeTextView.setText(mUsedCurrency + NumberFormatUtils.format2Decimal(fullValueChange24h.doubleValue()));
     }
 
     @Override
@@ -64,7 +72,6 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
 
         @BindView(R.id.coin_icon_image_view)
         public ImageView coinIconImageView;

@@ -4,6 +4,7 @@ package com.github.simonoppowa.tothemoon_tracker.fragments;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -34,6 +35,7 @@ public class CoinsInfoFragment extends Fragment {
 
     private static final String CURRENCY_KEY = "param1";
     private static final String COIN_LIST_KEY = "param2";
+    private static final String TRANSACTION_LIST_KEY = "transactionList";
 
     @BindView(R.id.coin_card_recycler_view)
     RecyclerView mCoinInfoRecyclerView;
@@ -42,18 +44,18 @@ public class CoinsInfoFragment extends Fragment {
 
     private String mUsedCurrency;
     private List<Coin> mCoins;
-
+    private List<Transaction> mTransactionList;
 
     public CoinsInfoFragment() {
         // Required empty public constructor
     }
 
-
-    public static CoinsInfoFragment newInstance(String currency, ArrayList<Coin> coins) {
+    public static CoinsInfoFragment newInstance(String currency, ArrayList<Coin> coins, List<Transaction> transactionList) {
         CoinsInfoFragment fragment = new CoinsInfoFragment();
         Bundle args = new Bundle();
         args.putString(CURRENCY_KEY, currency);
         args.putParcelableArrayList(COIN_LIST_KEY, coins);
+        args.putParcelableArrayList(TRANSACTION_LIST_KEY, (ArrayList<? extends Parcelable>) transactionList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,6 +66,7 @@ public class CoinsInfoFragment extends Fragment {
         if (getArguments() != null) {
             mUsedCurrency = getArguments().getString(CURRENCY_KEY);
             mCoins = getArguments().getParcelableArrayList(COIN_LIST_KEY);
+            mTransactionList = getArguments().getParcelableArrayList(TRANSACTION_LIST_KEY);
         }
     }
 
@@ -79,7 +82,7 @@ public class CoinsInfoFragment extends Fragment {
 
         // Create RecyclerView
         mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        mCoinAdapter = new CoinAdapter(getContext(), mCoins);
+        mCoinAdapter = new CoinAdapter(getContext(), mCoins, mTransactionList, mUsedCurrency);
 
         mCoinInfoRecyclerView.setLayoutManager(mLinearLayoutManager);
         mCoinInfoRecyclerView.setAdapter(mCoinAdapter);
@@ -87,7 +90,8 @@ public class CoinsInfoFragment extends Fragment {
         // Create Swipe Listener
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                   @NonNull RecyclerView.ViewHolder viewHolder1) {
                 return false;
             }
 
@@ -152,7 +156,6 @@ public class CoinsInfoFragment extends Fragment {
 
             }
         }).attachToRecyclerView(mCoinInfoRecyclerView);
-
 
         // Inflate the layout for this fragment
         return view;

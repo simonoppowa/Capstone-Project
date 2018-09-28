@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void createCoinsInfoFragment() {
 
         // Create CoinsInfoFragment
-        mCoinsInfoFragment = CoinsInfoFragment.newInstance(mUsedCurrency, (ArrayList<Coin>) mOwnedCoins);
+        mCoinsInfoFragment = CoinsInfoFragment.newInstance(mUsedCurrency, (ArrayList<Coin>) mOwnedCoins, mTransactions);
 
         FragmentManager fm = getSupportFragmentManager();
 
