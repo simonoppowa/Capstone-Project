@@ -4,6 +4,7 @@ package com.github.simonoppowa.tothemoon_tracker.fragments;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
@@ -20,9 +21,11 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.activities.MainActivity;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,13 +36,12 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class PortfolioPieChartFragment extends Fragment {
-    private static final String CURRENCY_KEY = "currencyKey";
-    private static final String PORTFOLIO_TOTAL_KEY = "portfolioTotalKey";
-    private static final String COIN_LIST_KEY = "coinListKey";
 
-    private String mUsedCurrency;
-    private double mTotalPortfolio;
+    private static final String COIN_LIST_KEY = "coinListKey";
+    private static final String TRANSACTION_KEY = "transactionKey";
+
     private ArrayList<Coin> mCoinList;
+    private List<Transaction> mTransactionList;
 
     private Map<String, Palette> mPalettes;
 
@@ -55,12 +57,11 @@ public class PortfolioPieChartFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PortfolioPieChartFragment newInstance(String currency, double portfolioTotal, ArrayList<Coin> coins) {
+    public static PortfolioPieChartFragment newInstance(ArrayList<Coin> coins, List<Transaction> transactions) {
         PortfolioPieChartFragment fragment = new PortfolioPieChartFragment();
         Bundle args = new Bundle();
-        args.putString(CURRENCY_KEY, currency);
-        args.putDouble(PORTFOLIO_TOTAL_KEY, portfolioTotal);
         args.putParcelableArrayList(COIN_LIST_KEY, coins);
+        args.putParcelableArrayList(TRANSACTION_KEY, (ArrayList<? extends Parcelable>) transactions);
         fragment.setArguments(args);
 
         return fragment;
@@ -70,9 +71,8 @@ public class PortfolioPieChartFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mUsedCurrency = getArguments().getString(CURRENCY_KEY);
-            mTotalPortfolio = getArguments().getDouble(PORTFOLIO_TOTAL_KEY);
             mCoinList = getArguments().getParcelableArrayList(COIN_LIST_KEY);
+            mTransactionList = getArguments().getParcelableArrayList(TRANSACTION_KEY);
 
             mPalettes = new HashMap<>();
         }  else {
@@ -104,9 +104,6 @@ public class PortfolioPieChartFragment extends Fragment {
 
         mChart.setDragDecelerationFrictionCoef(0.95f);
 
-        //mChart.setCenterTextTypeface(mTfLight);
-        //mChart.setCenterText(generateCenterSpannableText());
-
         mChart.setDrawHoleEnabled(true);
         mChart.setHoleColor(getResources().getColor(R.color.colorPrimary));
         mChart.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -129,17 +126,7 @@ public class PortfolioPieChartFragment extends Fragment {
         mChart.setNoDataText("No Data");
         mChart.setNoDataTextColor(R.color.colorAccent);
 
-        // mChart.setUnit(" €");
-        // mChart.setDrawUnitsInChart(true);
-
-        // add a selection listener
-        //mChart.setOnChartValueSelectedListener(this);
-
-        //setData();
         getColorsFromImages();
-
-
-
     }
 
     private void setData() {
@@ -147,7 +134,11 @@ public class PortfolioPieChartFragment extends Fragment {
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
 
         for(Coin coin : mCoinList) {
-            entries.add(new PieEntry((float) coin.getCurrentPrice(), coin.getFullName()));
+            Transaction coinTransaction = mTransactionList.get(mTransactionList.indexOf(new Transaction(coin.getName(),
+                0, 0)));
+            // Calculate current coin price * quantity
+            BigDecimal coinValue = new BigDecimal(coin.getCurrentPrice() * coinTransaction.getQuantity());
+            entries.add(new PieEntry((float) coinValue.floatValue(), coin.getFullName()));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Portfolio");
@@ -173,15 +164,7 @@ public class PortfolioPieChartFragment extends Fragment {
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
-        //data.setValueTextColor(R.color.defaultTextColor);
         data.setValueTextColors(textColors);
-        //data.setValueTypeface(mTfLight);
-
-        //TODO
-        //mChart.setEntryLabelColor(R.color.defaultTextColor);
-
-        // entry label styling
-        // mChart.setEntryLabelTextSize(12f);
 
         mChart.setData(data);
 

@@ -18,10 +18,10 @@ import timber.log.Timber;
 
 public class PortfolioFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final String ARG_PARAM3 = "param3";
-    private static final String ARG_PARAM4 = "param4";
+    private static final String CURRENCY_KEY = "currencyKey";
+    private static final String PORTFOLIO_KEY = "portfolioKey";
+    private static final String PORTFOLIO_CHANGE_KEY = "portfolioChangeKey";
+    private static final String PORTFOLIO_CHANGE_PCT_KEY = "portfolioChangePctKey";
 
     @BindView(R.id.total_portfolio_value)
     TextView mTotalPortfolioTV;
@@ -39,13 +39,14 @@ public class PortfolioFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PortfolioFragment newInstance(String currency, double portfolioTotal, double portfolioChangeDaily, double portfolioChangeDailyPct) {
+    public static PortfolioFragment newInstance(String currency, double portfolioTotal, double portfolioChangeDaily,
+                                                double portfolioChangeDailyPct) {
         PortfolioFragment fragment = new PortfolioFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, currency);
-        args.putDouble(ARG_PARAM2, portfolioTotal);
-        args.putDouble(ARG_PARAM3, portfolioChangeDaily);
-        args.putDouble(ARG_PARAM4, portfolioChangeDailyPct);
+        args.putString(CURRENCY_KEY, currency);
+        args.putDouble(PORTFOLIO_KEY, portfolioTotal);
+        args.putDouble(PORTFOLIO_CHANGE_KEY, portfolioChangeDaily);
+        args.putDouble(PORTFOLIO_CHANGE_PCT_KEY, portfolioChangeDailyPct);
         fragment.setArguments(args);
 
         return fragment;
@@ -57,10 +58,10 @@ public class PortfolioFragment extends Fragment {
         if(getArguments() != null) {
             Bundle bundle = getArguments();
 
-            mUsedCurrency = bundle.getString(ARG_PARAM1);
-            mPortfolioTotal = bundle.getDouble(ARG_PARAM2);
-            mPortfolioChangeDaily = bundle.getDouble(ARG_PARAM3);
-            mPortfolioChangeDailyPct = bundle.getDouble(ARG_PARAM4);
+            mUsedCurrency = bundle.getString(CURRENCY_KEY);
+            mPortfolioTotal = bundle.getDouble(PORTFOLIO_KEY);
+            mPortfolioChangeDaily = bundle.getDouble(PORTFOLIO_CHANGE_KEY);
+            mPortfolioChangeDailyPct = bundle.getDouble(PORTFOLIO_CHANGE_PCT_KEY);
         } else {
             throw new NullPointerException("No bundle was passed to PortfolioFragment");
         }

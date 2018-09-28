@@ -401,7 +401,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void createPieChartFragment(Portfolio portfolio) {
 
         // Create CoinsInfoFragment
-        mPortfolioPieChartFragment = PortfolioPieChartFragment.newInstance(mUsedCurrency, portfolio.getTotalPrice(), (ArrayList<Coin>) mOwnedCoins);
+        mPortfolioPieChartFragment = PortfolioPieChartFragment
+                .newInstance((ArrayList<Coin>) mOwnedCoins, mTransactions);
         FragmentManager fm = getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
