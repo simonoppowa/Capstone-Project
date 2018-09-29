@@ -140,9 +140,11 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                                 String change24h = NumberFormatUtils.format2Decimal(portfolio.getChange24h());
                                 String change24hPct = NumberFormatUtils.format2Decimal(portfolio.getChange24hPct());
 
-                                mViews.setTextViewText(R.id.widget_total_portfolio_price_text_view,totalPrice);
-                                mViews.setTextViewText(R.id.widget_daily_change_24h_text_view, change24h);
-                                mViews.setTextViewText(R.id.widget_daily_change_24h_pct_text_view, change24hPct);
+                                mViews.setTextViewText(R.id.widget_total_portfolio_price_text_view, mUsedCurrency + " " + totalPrice);
+                                mViews.setTextViewText(R.id.widget_daily_change_24h_text_view, mUsedCurrency + " " + change24h);
+                                mViews.setTextViewText(R.id.widget_daily_change_24h_pct_text_view, change24hPct + "%");
+
+                                mViews.setImageViewResource(R.id.widget_image_view, R.drawable.ic_rocket);
 
                                 ComponentName thisWidget = new ComponentName(mContext, PortfolioWidget.class);
 
