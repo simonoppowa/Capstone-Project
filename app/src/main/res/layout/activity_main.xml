@@ -49,7 +49,7 @@
                 android:id="@+id/coins_info_fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" />
+                android:orientation="vertical" />
 
             <LinearLayout
                 android:id="@+id/portfolio_pie_chart_fragment_container"

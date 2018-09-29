@@ -111,6 +111,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        if (savedInstanceState != null) {
+            return;
+        }
+
         // Room DB
         if(mTransactions == null) {
             new GetDatabaseAsyncTask(this).execute(transactionDatabase);
