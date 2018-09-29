@@ -18,19 +18,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_margin="8dp">
 
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/add_coin_image_view"
             android:src="@mipmap/ic_launcher_round"
             android:layout_width="60dp"
-            android:layout_height="60dp" />
+            android:layout_height="60dp"
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/add_coin_name_text_view"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            tools:text="Ethereum"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     </LinearLayout>
 
@@ -69,7 +75,10 @@
     <TextView
         android:id="@+id/add_full_price"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        tools:text="600,00"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
 
 </LinearLayout>

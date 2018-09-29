@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
+import com.github.simonoppowa.tothemoon_tracker.utils.PicassoUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
     private AdapterViewBinder<T> mViewBinder;
     private String mSearchTag;
     private boolean mHighlightPartsInCommon = true;
-    private String mHighlightColor = "#FFFF0000";
+    private int mHighlightColor;
     private BaseSearchDialogCompat mSearchDialog;
 
     public CoinSearchAdapter(Context context, @LayoutRes int layout, List<T> items) {
@@ -51,6 +53,7 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
         this.mItems = items;
         this.mLayout = layout;
         this.mViewBinder = viewBinder;
+        this.mHighlightColor = context.getResources().getColor(R.color.highlightTextColor);
     }
 
     public List<T> getItems() {
@@ -103,21 +106,20 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
 
         Coin coin = (Coin) object;
 
-        LinearLayout root = holder.getViewById(R.id.search_root);
         RoundedImageView image = holder.getViewById(R.id.search_coin_image_view);
         TextView fullNameTextView = holder.getViewById(R.id.search_coin_full_name_text_view);
         TextView nameTextView = holder.getViewById(R.id.search_coin_name_text_view);
 
-//        Picasso.get()
-//                .load(coin.getImageUrl())
-//                .into(image);
+        Picasso.get()
+                .load(PicassoUtils.getFullCoinImageUrl(coin.getImageUrl()))
+                .into(image);
 
         nameTextView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
         fullNameTextView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
 
         if (mSearchTag != null && mHighlightPartsInCommon) {
-            nameTextView.setText(StringsHelper.highlightLCS(coin.getTitle(), getSearchTag(), Color.parseColor(mHighlightColor)));
-            fullNameTextView.setText(StringsHelper.highlightLCS(coin.getName(), getSearchTag(), Color.parseColor(mHighlightColor)));
+            nameTextView.setText(StringsHelper.highlightLCS(coin.getTitle(), getSearchTag(), mHighlightColor));
+            fullNameTextView.setText(StringsHelper.highlightLCS(coin.getName(), getSearchTag(), mHighlightColor));
         } else {
             nameTextView.setText(object.getTitle());
             fullNameTextView.setText(coin.getName());
@@ -159,7 +161,7 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
         return this;
     }
 
-    public CoinSearchAdapter<T> setHighlightColor(String highlightColor) {
+    public CoinSearchAdapter<T> setHighlightColor(int highlightColor) {
         mHighlightColor = highlightColor;
         return this;
     }

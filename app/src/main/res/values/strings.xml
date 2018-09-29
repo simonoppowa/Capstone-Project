@@ -10,6 +10,10 @@
     <string name="welcome_dialog_button_left">Add own coins</string>
     <string name="welcome_dialog_button_right">Demo portfolio</string>
 
+    <string name="search_coin_title">Search Coin</string>
+    <string name="search_coin_hint">What are you looking for…</string>
+    <string name="error_max_transactions">Maximum transactions reached</string>
+
     <!--Strings related to AddCoinActivity-->
     <string name="add_transaction_activity_title">Add Transaction</string>
 

@@ -138,13 +138,27 @@ public class AddTransactionActivity extends AppCompatActivity {
             return true;
         } else {
             // Save button pressed
-            if(!mTradePriceInput.equals("") && !mQuantityInput.equals("")) {
+            if(isQuantityValid() && isTradePriceValid()) {
                 addNewTransactionToDatabase();
             } else {
                 Toast.makeText(this, "Please input price and quantity", Toast.LENGTH_SHORT).show();
             }
         }
 
+        return false;
+    }
+
+    private boolean isQuantityValid() {
+        if(!mQuantityInput.toString().equals("0")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isTradePriceValid() {
+        if(!mTradePriceInput.toString().equals("0")) {
+            return true;
+        }
         return false;
     }
 

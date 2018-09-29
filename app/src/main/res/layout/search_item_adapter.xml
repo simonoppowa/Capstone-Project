@@ -9,7 +9,6 @@
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/search_coin_image_view"
-        android:src="@mipmap/ic_launcher_round"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"

@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public static final String CRYPTOCOMPARE_API_BASE_URL = "https://min-api.cryptocompare.com/data/";
     public static final String CRYPTOCOMPARE_BASE_URL = "https://www.cryptocompare.com/";
 
+    public static final int MAX_API_CALLS = 10;
     public static final String DEFAULT_CURRENCY = "USD";
 
     private static Retrofit retrofit;
@@ -179,12 +181,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     void provideCustomDialog() {
         mCoinsAvailable = new ArrayList<>();
 
-        CoinSearchDialogCompat compatDialog = new CoinSearchDialogCompat<>(this, "Search...", "What are you looking for...", null, mCoinsAvailable,
+        CoinSearchDialogCompat compatDialog = new CoinSearchDialogCompat<>(this,
+                getString(R.string.search_coin_title), getString(R.string.search_coin_hint), null, mCoinsAvailable,
                 new SearchResultListener<Coin>() {
 
                     @Override
                     public void onSelected(BaseSearchDialogCompat dialog, Coin coin, int position) {
-                        startAddCoinActivity(coin);
+                        if(mTransactions.size() > MAX_API_CALLS) {
+                            Toast.makeText(MainActivity.this, getString(R.string.error_max_transactions), Toast.LENGTH_SHORT)
+                                    .show();
+                        } else {
+                            startAddCoinActivity(coin);
+                        }
                         dialog.dismiss();
                     }
                 });
