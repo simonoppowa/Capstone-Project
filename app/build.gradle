@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.github.mirrajabi:search-dialog:1.2.3'
     implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
+    implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 
 
     testImplementation 'junit:junit:4.12'
