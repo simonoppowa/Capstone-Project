@@ -13,4 +13,7 @@
     <color name="high_decrease_color">#B20008</color>
     <color name="low_decrease_color">#FF000B</color>
 
+    <color name="high_decrease_shade_color">#7F0005</color>
+    <color name="high_increase_shade_color">#007F21</color>
+
 </resources>

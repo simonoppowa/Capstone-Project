@@ -1,6 +1,7 @@
 package com.github.simonoppowa.tothemoon_tracker.fragments;
 
 import android.content.Context;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
+import com.github.simonoppowa.tothemoon_tracker.utils.ColorUtils;
 import com.github.simonoppowa.tothemoon_tracker.utils.NumberFormatUtils;
 
 import butterknife.BindView;
@@ -78,6 +80,13 @@ public class PortfolioFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         // Set textViews
+        Shader textShaderTotal = ColorUtils.pickShaderFromChange(getContext(), mPortfolioChangeDailyPct, mTotalPortfolioTV);
+        Shader textShaderElse = ColorUtils.pickShaderFromChange(getContext(), mPortfolioChangeDailyPct, mPortfolioChangeDailyPCTTV);
+
+        mTotalPortfolioTV.getPaint().setShader(textShaderTotal);
+        mPortfolioChangeDailyPCTTV.getPaint().setShader(textShaderElse);
+        mPortfolioChangeDailyTV.getPaint().setShader(textShaderElse);
+
         mTotalPortfolioTV.setText(mUsedCurrency + " " + NumberFormatUtils.format2Decimal(mPortfolioTotal));
         mPortfolioChangeDailyPCTTV.setText(NumberFormatUtils.format2Decimal(mPortfolioChangeDailyPct) + "%");
         mPortfolioChangeDailyTV.setText(mUsedCurrency + NumberFormatUtils.format2Decimal(mPortfolioChangeDaily));
