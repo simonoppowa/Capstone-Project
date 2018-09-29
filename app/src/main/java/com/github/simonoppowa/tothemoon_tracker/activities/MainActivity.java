@@ -469,7 +469,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private void setupDemoPortfolio() {
-        //TODO
+        // Insert transactions in new thread
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Transaction exampleTransaction1 = new Transaction("ETH", 220, 2);
+                Transaction exampleTransaction2 = new Transaction("BTC", 5000, 0.5);
+                Transaction exampleTransaction3 = new Transaction("XMR", 110, 10);
+                Transaction exampleTransaction4 = new Transaction("LTC", 50, 10);
+
+                transactionDatabase.transactionDao().insertTransaction(exampleTransaction1);
+                transactionDatabase.transactionDao().insertTransaction(exampleTransaction2);
+                transactionDatabase.transactionDao().insertTransaction(exampleTransaction3);
+                transactionDatabase.transactionDao().insertTransaction(exampleTransaction4);
+
+                refresh();
+            }
+        }).start();
     }
 
     @Override
