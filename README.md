@@ -10,6 +10,10 @@ Manage your Bitcoin, Ethereum, Ripple (…) portfolio without providing your pub
 This App is completely free (no ads) and open-source, you can check out the source code at github.com/simonoppowa.
 Supported currencies are USD, EUR, JPY and GBP.
 
+### Screenshots
+
+![](https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot1.png?raw=true) ![](https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot2.png?raw=true)
+
 ### Libraries used
 * [Timber](https://github.com/JakeWharton/timber)
 * [Butterknife](https://github.com/JakeWharton/butterknife)
