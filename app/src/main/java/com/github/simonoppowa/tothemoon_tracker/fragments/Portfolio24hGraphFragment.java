@@ -128,9 +128,6 @@ public class Portfolio24hGraphFragment extends Fragment {
 
             set1.setDrawIcons(false);
 
-            // set the line to be drawn like this "- - - - - -"
-            //set1.enableDashedLine(10f, 5f, 0f);
-            //set1.enableDashedHighlightLine(10f, 5f, 0f);
             set1.setColor(Color.WHITE);
             set1.setCircleColor(Color.WHITE);
             set1.setValueTextColor(Color.WHITE);
@@ -140,21 +137,11 @@ public class Portfolio24hGraphFragment extends Fragment {
             set1.setValueTextSize(9f);
             set1.setDrawFilled(true);
             set1.setFormLineWidth(1f);
-            //set1.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
             set1.setFormSize(15.f);
 
             set1.setFillColor(Color.WHITE);
 
-//            if (Utils.getSDKInt() >= 18) {
-//                // fill drawable only supported on api level 18 and above
-//                Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_red);
-//                set1.setFillDrawable(drawable);
-//            }
-//            else {
-//                set1.setFillColor(Color.BLACK);
-//            }
-
-            ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1); // add the datasets
 
             // create a data object with the datasets
@@ -166,7 +153,7 @@ public class Portfolio24hGraphFragment extends Fragment {
     }
 
     private List<Entry> createEntityList() {
-        ArrayList<Entry> values = new ArrayList<Entry>();
+        ArrayList<Entry> values = new ArrayList<>();
 
         int i = 0;
         for (PortfolioAtTime portfolioAtTime : mPortfoliosAtTime) {

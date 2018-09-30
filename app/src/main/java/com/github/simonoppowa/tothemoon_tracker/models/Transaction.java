@@ -70,12 +70,7 @@ public class Transaction implements Parcelable{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Transaction) {
-            if(((Transaction) obj).coinName.equals(coinName))  {
-                return true;
-            }
-        }
-        return false;
+        return obj instanceof Transaction && ((Transaction) obj).coinName.equals(coinName);
     }
 
     @Override

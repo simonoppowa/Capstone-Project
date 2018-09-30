@@ -14,8 +14,19 @@
     <string name="search_coin_hint">What are you looking for…</string>
     <string name="error_max_transactions">Maximum transactions reached</string>
 
+    <string name="search_item">search item</string>
+    <string name="settings_item">settings item</string>
+
+    <string name="portfolio_name">Portfolio</string>
+    <string name="graph_no_data">No Data</string>
+
     <!--Strings related to AddCoinActivity-->
     <string name="add_transaction_activity_title">Add Transaction</string>
+
+    <string name="save_item">save</string>
+
+    <string name="trade_price_hint">Trade Price</string>
+    <string name="quantity_hint">Quantity</string>
 
     <!-- Strings related to SettingsActivity -->
     <string name="pref_settings_title">Settings</string>
@@ -48,8 +59,9 @@
     <string name="pref_other_licenses_key" translatable="false">other_licenses</string>
     <string name="pref_cryptocompare_api_key" translatable="false">cryptocompare_api</string>
     <string name="pref_developer_key" translatable="false">developer</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
 
+    <!--Accessibility-->
+    <string name="rocket_image_cd">Rocket Image</string>
+    <string name="moon_image_cd">Moon Image</string>
 
 </resources>

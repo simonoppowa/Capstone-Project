@@ -29,6 +29,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private Preference openSourceLibraryPreference;
     private Preference otherLicensesPreference;
     private Preference cryptocompareApiPreference;
+    private Preference developerPreference;
 
     private ApacheSoftwareLicense20 mApacheSoftwareLicense = new ApacheSoftwareLicense20();
 
@@ -39,6 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         openSourceLibraryPreference = findPreference(getString(R.string.pref_open_source_licenses_key));
         otherLicensesPreference = findPreference(getString(R.string.pref_other_licenses_key));
         cryptocompareApiPreference = findPreference(getString(R.string.pref_cryptocompare_api_key));
+        developerPreference = findPreference(getString(R.string.pref_developer_key));
 
         openSourceLibraryPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -60,6 +62,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 showCryptoCompareSite();
+                return true;
+            }
+        });
+
+        developerPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showDeveloperInformation();
                 return true;
             }
         });
@@ -121,7 +131,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private void showOpenSourceLibraryLicences() {
         final Notices notices = new Notices();
         notices.addNotice(new Notice("The Android Open Source Project", "", " Copyright (C) 2011 The Android Open Source Project", mApacheSoftwareLicense));
-
         notices.addNotice(new Notice("Timber", "https://github.com/JakeWharton/timber", "Copyright 2013 Jake Wharton", mApacheSoftwareLicense));
         notices.addNotice(new Notice("Butterknife", "https://github.com/JakeWharton/butterknife", "Copyright 2013 Jake Wharton", mApacheSoftwareLicense));
         notices.addNotice(new Notice("Picasso", "https://github.com/square/picasso", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
@@ -134,6 +143,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         notices.addNotice(new Notice("search-dialog", "https://github.com/mirrajabi/search-dialog", "Copyright 2018 Philipp Jahoda", mApacheSoftwareLicense));
         notices.addNotice(new Notice("LicensesDialog", "https://github.com/PSDev/LicensesDialog", "Copyright 2013-2017 Philip Schiffer", mApacheSoftwareLicense));
         notices.addNotice(new Notice("LicensesDialog", "https://github.com/PSDev/LicensesDialog", "Copyright 2013-2017 Philip Schiffer", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("MaterialStyledDialogs", "https://github.com/javiersantos/MaterialStyledDialogs", "Copyright 2016-2018 Javier Santos", mApacheSoftwareLicense));
         notices.addNotice(new Notice("JUnit", "https://junit.org/", "Copyright © 2002-2018 JUnit", new EclipsePublicLicense10()));
 
         new LicensesDialog.Builder(Objects.requireNonNull(getContext()))
@@ -161,5 +171,17 @@ public class SettingsFragment extends PreferenceFragmentCompat
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(getString(R.string.pref_cryptocompare_api_url)));
         startActivity(i);
+    }
+
+    private void showDeveloperInformation() {
+        final Notices notices = new Notices();
+
+        notices.addNotice(new Notice("", "https://github.com/simonoppowa", "Developed by Simon Oppowa", null));
+
+        new LicensesDialog.Builder(Objects.requireNonNull(getContext()))
+                .setNotices(notices)
+                .setDividerColorId(R.color.colorPrimary)
+                .build()
+                .show();
     }
 }

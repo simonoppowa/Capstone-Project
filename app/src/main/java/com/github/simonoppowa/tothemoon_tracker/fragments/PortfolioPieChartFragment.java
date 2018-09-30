@@ -19,9 +19,9 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.simonoppowa.tothemoon_tracker.R;
-import com.github.simonoppowa.tothemoon_tracker.activities.MainActivity;
 import com.github.simonoppowa.tothemoon_tracker.models.Coin;
 import com.github.simonoppowa.tothemoon_tracker.models.Transaction;
+import com.github.simonoppowa.tothemoon_tracker.utils.PicassoUtils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -115,7 +115,7 @@ public class PortfolioPieChartFragment extends Fragment {
         mChart.setTransparentCircleRadius(61f);
 
         mChart.setDrawCenterText(true);
-        mChart.setCenterText("Portfolio");
+        mChart.setCenterText(getString(R.string.portfolio_name));
         mChart.setCenterTextColor(getResources().getColor(R.color.defaultTextColor));
 
         mChart.setRotationAngle(0);
@@ -123,7 +123,7 @@ public class PortfolioPieChartFragment extends Fragment {
         mChart.setRotationEnabled(true);
         mChart.setHighlightPerTapEnabled(false);
 
-        mChart.setNoDataText("No Data");
+        mChart.setNoDataText(getString(R.string.graph_no_data));
         mChart.setNoDataTextColor(R.color.colorAccent);
 
         getColorsFromImages();
@@ -131,17 +131,17 @@ public class PortfolioPieChartFragment extends Fragment {
 
     private void setData() {
 
-        ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
+        ArrayList<PieEntry> entries = new ArrayList<>();
 
         for(Coin coin : mCoinList) {
             Transaction coinTransaction = mTransactionList.get(mTransactionList.indexOf(new Transaction(coin.getName(),
                 0, 0)));
             // Calculate current coin price * quantity
             BigDecimal coinValue = new BigDecimal(coin.getCurrentPrice() * coinTransaction.getQuantity());
-            entries.add(new PieEntry((float) coinValue.floatValue(), coin.getFullName()));
+            entries.add(new PieEntry(coinValue.floatValue(), coin.getFullName()));
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Portfolio");
+        PieDataSet dataSet = new PieDataSet(entries, getString(R.string.portfolio_name));
 
         dataSet.setDrawIcons(false);
 
@@ -179,7 +179,7 @@ public class PortfolioPieChartFragment extends Fragment {
         mTarget = new ArrayList<>();
 
         for(final Coin coin : mCoinList) {
-            String imageUrl = MainActivity.CRYPTOCOMPARE_BASE_URL + coin.getImageUrl() + "?width=50";
+            String imageUrl = PicassoUtils.getFullCoinImageUrlSmall(coin.getImageUrl());
             Timber.d(imageUrl);
 
             Target newTarget = new Target() {
@@ -190,7 +190,6 @@ public class PortfolioPieChartFragment extends Fragment {
                                 @Override
                                 public void onGenerated(@Nullable Palette palette) {
                                     synchronized (this) {
-                                        int index = mCoinList.indexOf(coin);
                                         mPalettes.put(coin.getName(), palette);
                                         callsRemaining--;
                                         Timber.d("Calls remaining: %s", callsRemaining);
@@ -207,7 +206,6 @@ public class PortfolioPieChartFragment extends Fragment {
 
                 @Override
                 public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                    //TODO
                     Timber.d("Call failed");
                 }
 

@@ -46,10 +46,10 @@
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/add_trade_price_edit_text"
-            style="@style/AddCoinStyle"
+            style="@style/AddCoinTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Trade Price"
+            android:hint="@string/trade_price_hint"
             android:inputType="numberDecimal"
             android:singleLine="true" />
 
@@ -62,10 +62,10 @@
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/add_quantity_edit_text"
-            style="@style/AddCoinStyle"
+            style="@style/AddCoinTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Quantity"
+            android:hint="@string/quantity_hint"
             android:singleLine="true"
             android:inputType="numberDecimal"/>
 

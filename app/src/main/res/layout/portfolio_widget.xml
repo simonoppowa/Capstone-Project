@@ -1,11 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/widget_image_view"
+        android:contentDescription="@string/rocket_image_cd"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
@@ -25,7 +27,7 @@
             android:layout_margin="16dp"
             android:background="@color/colorAccent"
             android:padding="8dp"
-            android:text="$1431,47" />
+            tools:text="$1431,47" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,7 +43,7 @@
                 android:layout_margin="8dp"
                 android:background="@color/colorAccent"
                 android:padding="8dp"
-                android:text="+11,32%" />
+                tools:text="+11,32%" />
 
             <TextView
                 android:id="@+id/widget_daily_change_24h_pct_text_view"
@@ -50,7 +52,7 @@
                 android:layout_margin="8dp"
                 android:padding="8dp"
                 android:background="@color/colorAccent"
-                android:text="+$143,70" />
+                tools:text="+$143,70" />
 
 
         </LinearLayout>

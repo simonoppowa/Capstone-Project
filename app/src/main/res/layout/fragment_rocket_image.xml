@@ -7,6 +7,7 @@
 
     <ImageView
         android:id="@+id/rocket_image_view"
+        android:contentDescription="@string/rocket_image_cd"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginStart="16dp"
@@ -15,6 +16,7 @@
 
     <ImageView
         android:id="@+id/moon_image_view"
+        android:contentDescription="@string/moon_image_cd"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@mipmap/ic_launcher"

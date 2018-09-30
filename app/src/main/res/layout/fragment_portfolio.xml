@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="$1431,47"
+        tools:text="$1431,47"
         android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textSize="30sp" />
     
@@ -27,16 +27,16 @@
             android:id="@+id/daily_portfolio_percentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:text="+11,32%"
+            android:layout_marginStart="16dp"
+            tools:text="+11,32%"
             android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
         <TextView
             android:id="@+id/daily_portfolio_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:text="+$143,70"
+            android:layout_marginStart="16dp"
+            tools:text="+$143,70"
             android:textAppearance="@android:style/TextAppearance.Material.Title" />
         
         

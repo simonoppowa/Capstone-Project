@@ -49,7 +49,7 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
     AppWidgetManager mAppWidgetManager;
 
 
-    public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    public void updateAppWidget(Context context, AppWidgetManager appWidgetManager) {
 
         // Set up libraries
         Timber.plant(new Timber.DebugTree());
@@ -70,7 +70,7 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager);
         }
     }
 
@@ -124,15 +124,13 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                             coinList.add(newCoin);
                         }
 
-                        Portfolio currentPortfolio = MainActivity.calculateTotalPortfolio(coinList, transactions);
-
-                        return currentPortfolio;
+                        return MainActivity.calculateTotalPortfolio(coinList, transactions);
                     }
                 })
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
-                            public void accept(Object currentPortfolio) throws Exception {
+                            public void accept(Object currentPortfolio) {
                                 // Successful completion of all requests
                                 Portfolio portfolio = (Portfolio) currentPortfolio;
 
@@ -154,7 +152,7 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                         },
                         new Consumer<Throwable>() {
                             @Override
-                            public void accept(Throwable throwable) throws Exception {
+                            public void accept(Throwable throwable) {
                                 // Error completion of requests
                                 throwable.printStackTrace();
                             }

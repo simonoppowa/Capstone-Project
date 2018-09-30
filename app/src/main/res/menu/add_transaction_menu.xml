@@ -6,6 +6,6 @@
         android:id="@+id/save_item"
         android:orderInCategory="1"
         app:showAsAction="always"
-        android:title="save"/>
+        android:title="@string/save_item"/>
 
 </menu>

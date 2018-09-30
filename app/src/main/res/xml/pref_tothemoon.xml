@@ -19,7 +19,7 @@
 
         <Preference
             android:key="@string/pref_about_category_key"
-            android:icon="@mipmap/ic_launcher_round"
+            android:icon="@drawable/ic_rocket"
             android:title="@string/app_name"
             android:selectable="false"
             android:persistent="false"

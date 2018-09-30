@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="true">
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,12 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.SettingsActivity"
-            android:theme="@style/Theme.Custom"></activity>
+            android:theme="@style/SettingsTheme" />
+
         <activity
             android:name=".activities.AddTransactionActivity"
-            android:theme="@style/AddCoinStyle"></activity>
+            android:theme="@style/AddCoinTheme" />
 
         <receiver android:name=".widgets.PortfolioWidget">
             <intent-filter>

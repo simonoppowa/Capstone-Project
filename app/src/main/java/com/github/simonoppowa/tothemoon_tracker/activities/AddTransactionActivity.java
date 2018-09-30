@@ -95,7 +95,7 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     @OnTextChanged(R.id.add_trade_price_edit_text)
-    void onTradePriceTextChanged(CharSequence charSequence, int start, int count, int after) {
+    void onTradePriceTextChanged(CharSequence charSequence) {
         if(charSequence != null && !charSequence.toString().equals("")) {
             mTradePriceInput = new BigDecimal(charSequence.toString());
             setFullPriceTextView();
@@ -103,7 +103,7 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     @OnTextChanged(R.id.add_quantity_edit_text)
-    void onQuantityTextChanged(CharSequence charSequence, int start, int count, int after) {
+    void onQuantityTextChanged(CharSequence charSequence) {
         if(charSequence != null && !charSequence.toString().equals("")) {
             mQuantityInput = new BigDecimal(charSequence.toString());
             setFullPriceTextView();
@@ -149,17 +149,11 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     private boolean isQuantityValid() {
-        if(!mQuantityInput.toString().equals("0")) {
-            return true;
-        }
-        return false;
+        return !mQuantityInput.toString().equals("0");
     }
 
     private boolean isTradePriceValid() {
-        if(!mTradePriceInput.toString().equals("0")) {
-            return true;
-        }
-        return false;
+        return !mTradePriceInput.toString().equals("0");
     }
 
     private void addNewTransactionToDatabase() {

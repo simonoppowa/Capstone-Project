@@ -1,7 +1,6 @@
 package com.github.simonoppowa.tothemoon_tracker.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -9,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.simonoppowa.tothemoon_tracker.R;
@@ -28,7 +26,7 @@ import ir.mirrajabi.searchdialog.core.Searchable;
 
 public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapter<CoinSearchAdapter.ViewHolder> {
 
-    protected Context mContext;
+    private Context mContext;
     private List<T> mItems = new ArrayList<>();
     private LayoutInflater mLayoutInflater;
     private int mLayout;
@@ -41,10 +39,6 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
 
     public CoinSearchAdapter(Context context, @LayoutRes int layout, List<T> items) {
         this(context, layout, null, items);
-    }
-
-    public CoinSearchAdapter(Context context, AdapterViewBinder<T> viewBinder, @LayoutRes int layout, List<T> items) {
-        this(context, layout, viewBinder, items);
     }
 
     public CoinSearchAdapter(Context context, @LayoutRes int layout, @Nullable AdapterViewBinder<T> viewBinder, List<T> items) {
@@ -90,8 +84,7 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
 
         convertView.setTag(new ViewHolder(convertView));
 
-        ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        return viewHolder;
+        return (ViewHolder) convertView.getTag();
     }
 
     @Override
@@ -166,9 +159,8 @@ public class CoinSearchAdapter<T extends Searchable> extends RecyclerView.Adapte
         return this;
     }
 
-    public CoinSearchAdapter<T> setSearchDialog(BaseSearchDialogCompat searchDialog) {
+    public void setSearchDialog(BaseSearchDialogCompat searchDialog) {
         mSearchDialog = searchDialog;
-        return this;
     }
 
     public interface AdapterViewBinder<T> {

@@ -89,13 +89,8 @@ public class PortfolioFragment extends Fragment {
 
         mTotalPortfolioTV.setText(mUsedCurrency + " " + NumberFormatUtils.format2Decimal(mPortfolioTotal));
         mPortfolioChangeDailyPCTTV.setText(NumberFormatUtils.format2Decimal(mPortfolioChangeDailyPct) + "%");
-        mPortfolioChangeDailyTV.setText(mUsedCurrency + NumberFormatUtils.format2Decimal(mPortfolioChangeDaily));
+        mPortfolioChangeDailyTV.setText(mUsedCurrency + " " + NumberFormatUtils.format2Decimal(mPortfolioChangeDaily));
 
         return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
     }
 }

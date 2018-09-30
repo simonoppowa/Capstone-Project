@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         transactionDatabase = TransactionDatabase.getDatabase(getApplicationContext());
 
-        // Retrofit API call
+        // Retrofit
         retrofit = new Retrofit.Builder()
                 .baseUrl(CRYPTOCOMPARE_API_BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             return;
         }
 
-        // Room DB
         if (mTransactions == null) {
             new GetDatabaseAsyncTask(this).execute(transactionDatabase);
         }
@@ -263,7 +262,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     @Override
                     public Object apply(Object[] objects) {
                         // Objects[] is an array of combined results of completed requests
-
                         for (Object response : objects) {
                             Coin newCoin = JsonUtils.getCoinFromResponse((JsonElement) response);
 
@@ -279,19 +277,19 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
-                            public void accept(Object currentPortfolio) throws Exception {
+                            public void accept(Object currentPortfolio) {
                                 // Successful completion of all requests
                                 createRocketImageFragment(((Portfolio) currentPortfolio).getChange24hPct());
                                 createPortfolioFragment((Portfolio) currentPortfolio);
                                 createCoinsInfoFragment();
-                                createPieChartFragment((Portfolio) currentPortfolio);
+                                createPieChartFragment();
                             }
                         },
                         new Consumer<Throwable>() {
                             @Override
-                            public void accept(Throwable throwable) throws Exception {
+                            public void accept(Throwable throwable) {
                                 // Error completion of requests
-                                throwable.printStackTrace();
+                                Timber.d("Error while fetching coins info");
                             }
                         }
                 );
@@ -310,8 +308,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                         for (Object response : objects) {
 
-                            Response<JsonElement> responseJson = (Response<JsonElement>) response;
-
                             HttpUrl url = ((Response<JsonElement>) response).raw().request().url();
 
                             JsonElement jsonElement = ((Response<JsonElement>) response).body();
@@ -325,16 +321,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
-                            public void accept(Object o) throws Exception {
-                                List<List<CoinAtTime>> coinsatTime = (List<List<CoinAtTime>>) o;
-                                List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(coinsatTime);
+                            public void accept(Object o) {
+                                List<List<CoinAtTime>> coinsAtTime = (List<List<CoinAtTime>>) o;
+                                List<PortfolioAtTime> portfoliosAtTime = create24hPortfolios(coinsAtTime);
                                 create24hGraphFragment(portfoliosAtTime);
                             }
                         },
                         new Consumer<Throwable>() {
                             @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
+                            public void accept(Throwable throwable) {
+                                Timber.d("Error while fetching 24h coins info");
                             }
                         }
                 );
@@ -359,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-
+                Timber.d("Error while fetching coin list");
             }
         });
     }
@@ -414,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         ft.commit();
     }
 
-    private void createPieChartFragment(Portfolio portfolio) {
+    private void createPieChartFragment() {
 
         // Create CoinsInfoFragment
         mPortfolioPieChartFragment = PortfolioPieChartFragment
@@ -449,7 +445,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     public static Portfolio calculateTotalPortfolio(List<Coin> coinList, List<Transaction> transactionList) {
-        //TODO better search, BigDecimal Calc
         double sum = 0.00;
         double portfolioChange24h = 0.00;
         double portfolioChange24hPct = 0.00;

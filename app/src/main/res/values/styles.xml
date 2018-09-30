@@ -1,7 +1,5 @@
 <resources>
 
-    <!--TODO-->
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -15,16 +13,14 @@
         <item name="android:listSelector">@color/colorAccent</item>
     </style>
 
-    <style name="Theme.Custom" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:listViewStyle">@style/MyListViewStyle</item>
+    <style name="SettingsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:listViewStyle">@style/MyListViewTheme</item>
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:colorPrimary">@color/colorAccent</item>
         <item name="android:color">@color/colorAccent</item>
     </style>
 
-    <style name="MyListViewStyle" parent="@android:style/Widget.Holo.Light.ListView">
-        <item name="android:background">@color/colorAccent</item>
-        <item name="android:listSelector">@color/colorAccent</item>
+    <style name="MyListViewTheme" parent="@android:style/Widget.Holo.Light.ListView">
         <item name="android:textColor">@color/colorAccent</item>
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:colorPrimary">@color/colorAccent</item>
@@ -32,12 +28,8 @@
     </style>
 
 
-    <style name="AddCoinStyle" parent="AppTheme">
-
-        <!-- Hint color and label color in FALSE state -->
+    <style name="AddCoinTheme" parent="AppTheme">
         <item name="android:textColorHint">@color/colorAccent</item>
-        <!--<item name="android:textSize">20sp</item>-->
-        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/defaultTextColor</item>
         <item name="colorControlNormal">@color/defaultTextColor</item>
         <item name="colorControlActivated">@color/defaultTextColor</item>

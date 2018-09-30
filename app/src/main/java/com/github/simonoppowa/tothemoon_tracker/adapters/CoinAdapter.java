@@ -24,13 +24,11 @@ import butterknife.ButterKnife;
 
 public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> {
 
-    private final Context context;
     private List<Coin> mCoins;
     private List<Transaction> mTransactions;
     private String mUsedCurrency;
 
-    public CoinAdapter(Context context, List<Coin> coins, List<Transaction> transactions, String currency) {
-        this.context = context;
+    public CoinAdapter(List<Coin> coins, List<Transaction> transactions, String currency) {
         mCoins = coins;
         mTransactions = transactions;
         mUsedCurrency = currency;

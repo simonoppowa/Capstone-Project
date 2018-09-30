@@ -82,7 +82,7 @@ public class CoinsInfoFragment extends Fragment {
 
         // Create RecyclerView
         mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        mCoinAdapter = new CoinAdapter(getContext(), mCoins, mTransactionList, mUsedCurrency);
+        mCoinAdapter = new CoinAdapter(mCoins, mTransactionList, mUsedCurrency);
 
         mCoinInfoRecyclerView.setLayoutManager(mLinearLayoutManager);
         mCoinInfoRecyclerView.setAdapter(mCoinAdapter);
