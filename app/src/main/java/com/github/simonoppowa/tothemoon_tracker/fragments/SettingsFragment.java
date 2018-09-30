@@ -139,9 +139,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         notices.addNotice(new Notice("Retrofit", "https://github.com/square/retrofit", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
         notices.addNotice(new Notice("Retrofit GSON Converter", "https://github.com/square/retrofit/tree/master/retrofit-converters/gson", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
         notices.addNotice(new Notice("Retrofit RxJava2 Adapter", "https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2", "Copyright 2013 Square, Inc.", mApacheSoftwareLicense));
+        notices.addNotice(new Notice("RxJava", "https://github.com/ReactiveX/RxJava", "Copyright (c) 2016-present, RxJava Contributors.", mApacheSoftwareLicense));
         notices.addNotice(new Notice("MPAndroidChart", "https://github.com/PhilJay/MPAndroidChart", "Copyright 2018 Philipp Jahoda", mApacheSoftwareLicense));
         notices.addNotice(new Notice("search-dialog", "https://github.com/mirrajabi/search-dialog", "Copyright 2018 Philipp Jahoda", mApacheSoftwareLicense));
-        notices.addNotice(new Notice("LicensesDialog", "https://github.com/PSDev/LicensesDialog", "Copyright 2013-2017 Philip Schiffer", mApacheSoftwareLicense));
         notices.addNotice(new Notice("LicensesDialog", "https://github.com/PSDev/LicensesDialog", "Copyright 2013-2017 Philip Schiffer", mApacheSoftwareLicense));
         notices.addNotice(new Notice("MaterialStyledDialogs", "https://github.com/javiersantos/MaterialStyledDialogs", "Copyright 2016-2018 Javier Santos", mApacheSoftwareLicense));
         notices.addNotice(new Notice("JUnit", "https://junit.org/", "Copyright © 2002-2018 JUnit", new EclipsePublicLicense10()));
