@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                     @Override
                     public void onSelected(BaseSearchDialogCompat dialog, Coin coin, int position) {
-                        if(mTransactions.size() > MAX_API_CALLS) {
+                        if(mTransactions != null && mTransactions.size() > MAX_API_CALLS) {
                             Toast.makeText(MainActivity.this, getString(R.string.error_max_transactions), Toast.LENGTH_SHORT)
                                     .show();
                         } else {
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                             JsonElement jsonElement = ((Response<JsonElement>) response).body();
 
-                            List<CoinAtTime> newCoinAtTime = JsonUtils.getCoinAtTimeListFromResponse(jsonElement, url.queryParameter("fsym"));
+                            List<CoinAtTime> newCoinAtTime = JsonUtils.getCoinAtTimeListFromResponse(jsonElement, url.queryParameter(getString(R.string.query_param_currency)));
                             coinsAtTime.add(newCoinAtTime);
                         }
                         return coinsAtTime;

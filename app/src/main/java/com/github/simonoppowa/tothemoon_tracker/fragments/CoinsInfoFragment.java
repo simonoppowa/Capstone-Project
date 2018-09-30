@@ -33,9 +33,9 @@ import timber.log.Timber;
 
 public class CoinsInfoFragment extends Fragment {
 
-    private static final String CURRENCY_KEY = "param1";
-    private static final String COIN_LIST_KEY = "param2";
-    private static final String TRANSACTION_LIST_KEY = "transactionList";
+    private static final String CURRENCY_KEY = "currencyKey";
+    private static final String COIN_LIST_KEY = "coinListKey";
+    private static final String TRANSACTION_LIST_KEY = "transactionListKey";
 
     @BindView(R.id.coin_card_recycler_view)
     RecyclerView mCoinInfoRecyclerView;

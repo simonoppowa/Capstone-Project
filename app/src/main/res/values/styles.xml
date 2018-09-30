@@ -11,6 +11,7 @@
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="android:actionMenuTextColor">@color/defaultTextColor</item>
         <item name="android:listSelector">@color/colorAccent</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Activity</item>
     </style>
 
     <style name="SettingsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -18,6 +19,7 @@
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:colorPrimary">@color/colorAccent</item>
         <item name="android:color">@color/colorAccent</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Activity</item>
     </style>
 
     <style name="MyListViewTheme" parent="@android:style/Widget.Holo.Light.ListView">
@@ -38,6 +40,13 @@
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="android:fontFamily">@font/aldrichregular</item>
+    </style>
+
+    <style name="Animation.Activity" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/slide_out_right</item>
     </style>
 
 </resources>
