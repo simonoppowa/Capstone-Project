@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
+    signingConfigs {
+        ToTheMoon {
+            keyAlias 'ToTheMoon'
+            keyPassword 'ToTheMoon'
+            storeFile file('C:/Users/Simon/OneDrive/Android Developer/Capstone/ToTheMoon-Tracker/keystore.jks')
+            storePassword 'ToTheMoon'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.github.simonoppowa.tothemoon_tracker"
@@ -13,8 +21,12 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.ToTheMoon
+        }
+        debug {
+            signingConfig signingConfigs.ToTheMoon
         }
     }
     packagingOptions {
