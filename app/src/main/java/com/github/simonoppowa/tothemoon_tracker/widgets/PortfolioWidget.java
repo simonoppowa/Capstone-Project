@@ -119,10 +119,13 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                         for(Object response : objects) {
                             Coin newCoin = JsonUtils.getCoinFromResponse((JsonElement) response);
 
-                            Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() +
-                                    ", " + newCoin.getImageUrl() + ", " + newCoin.getCurrentPrice()
-                                    + ", " + newCoin.getChange24h() + ", " + newCoin.getChange24hPct());
-                            coinList.add(newCoin);
+                            if(newCoin != null) {
+                                Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() +
+                                        ", " + newCoin.getImageUrl() + ", " + newCoin.getCurrentPrice()
+                                        + ", " + newCoin.getChange24h() + ", " + newCoin.getChange24hPct());
+                                coinList.add(newCoin);
+                            }
+
                         }
 
                         return MainActivity.calculateTotalPortfolio(coinList, transactions);
@@ -155,6 +158,7 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                             @Override
                             public void accept(Throwable throwable) {
                                 // Error completion of requests
+                                Timber.d("Error while getting widget information");
                                 throwable.printStackTrace();
                             }
                         }
