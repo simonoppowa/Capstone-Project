@@ -3,7 +3,6 @@ package com.github.simonoppowa.tothemoon_tracker.widgets;
 import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.arch.lifecycle.LiveData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -62,9 +61,9 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
 
         TransactionDatabase transactionDatabase = TransactionDatabase.getDatabase(context);
 
-        new GetDatabaseAsyncTask(this).execute(transactionDatabase);
-
         mViews = new RemoteViews(context.getPackageName(), R.layout.portfolio_widget);
+
+        new GetDatabaseAsyncTask(this).execute(transactionDatabase);
     }
 
     @Override
@@ -86,8 +85,9 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
     }
 
 
+    @SuppressLint("CheckResult")
     @Override
-    public void onDatabaseTaskCompleted(final LiveData<List<Transaction>> transactions) {
+    public void onDatabaseTaskCompleted(final List<Transaction> transactions) {
 
         // Retrofit API call
         retrofit = new Retrofit.Builder()
@@ -100,7 +100,7 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
 
         final List<Observable<?>> coinInfoRequests = new ArrayList<>();
 
-        for(Transaction transaction : transactions.getValue()) {
+        for(Transaction transaction : transactions) {
             Observable<JsonElement> coinInfoCall = coinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency, 0);
             coinInfoRequests.add(coinInfoCall);
         }
@@ -125,7 +125,7 @@ public class PortfolioWidget extends AppWidgetProvider implements GetDatabaseAsy
                             coinList.add(newCoin);
                         }
 
-                        return MainActivity.calculateTotalPortfolio(coinList, transactions.getValue());
+                        return MainActivity.calculateTotalPortfolio(coinList, transactions);
                     }
                 })
                 .subscribe(
