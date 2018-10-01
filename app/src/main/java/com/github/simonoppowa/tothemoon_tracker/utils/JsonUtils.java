@@ -18,7 +18,7 @@ public class JsonUtils {
 
     public static Coin getCoinFromResponse(JsonElement responseJson) {
 
-        if(TextUtils.equals(responseJson.getAsJsonObject().get("Response").toString(), "Error")) {
+        if(TextUtils.equals(responseJson.getAsJsonObject().get("Response").getAsString(), "Error")) {
             Timber.d("Response error");
             return null;
         }

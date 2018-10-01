@@ -102,9 +102,7 @@ public class CoinsInfoFragment extends Fragment {
                 final Coin deletedCoin = mCoins.get(deletedCoinIndex);
                 Timber.d("Deleting Transaction: %s", deletedCoin.getFullName());
                 mCoins.remove(deletedCoinIndex);
-
                 mCoinAdapter.notifyDataSetChanged();
-
 
                 final TransactionDatabase transactionDatabase = TransactionDatabase.getDatabase(getContext());
                 // Delete Transaction in other thread
@@ -119,8 +117,8 @@ public class CoinsInfoFragment extends Fragment {
 
                         // Show Undo Snackbar
                         Snackbar snackbar = Snackbar
-                                .make(view, deletedCoin.getFullName() + " removed!", Snackbar.LENGTH_LONG);
-                        snackbar.setAction("UNDO", new View.OnClickListener() {
+                                .make(view, String.format(getString(R.string.snack_bar_removed_coin), deletedCoin.getFullName()), Snackbar.LENGTH_LONG);
+                        snackbar.setAction(getString(R.string.undo_button), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 // Undo is selected, restore the deleted item on new thread

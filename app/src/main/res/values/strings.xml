@@ -20,7 +20,8 @@
     <string name="portfolio_name">Portfolio</string>
     <string name="graph_no_data">No Data</string>
 
-    <string name="undo_button">Undo</string>
+    <string name="snack_bar_removed_coin">"%1$s removed!"</string>
+    <string name="undo_button">UNDO</string>
 
     <string name="query_param_currency">fsym</string>
 
@@ -32,6 +33,8 @@
     <string name="trade_price_hint">Trade Price</string>
     <string name="quantity_hint">Quantity</string>
     <string name="input_error">Please input trade price and quantity</string>
+    
+    <string name="new_transaction_added">"%1$s transaction added"</string>
 
     <!-- Strings related to SettingsActivity -->
     <string name="pref_settings_title">Settings</string>

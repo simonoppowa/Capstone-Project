@@ -3,6 +3,7 @@ package com.github.simonoppowa.tothemoon_tracker.activities;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
@@ -29,6 +30,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
+import com.github.simonoppowa.tothemoon_tracker.databases.MainViewModel;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public static final int MAX_API_CALLS = 10;
     public static final String DEFAULT_CURRENCY = "USD";
 
+    private boolean refreshOnDbChange = true;
     private static Retrofit retrofit;
     private Handler mHandler;
 
@@ -230,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
         ft.commit();
         mOwnedCoins = new ArrayList<>();
+        refreshOnDbChange = true;
 
         retrieveTransactions();
     }
@@ -268,12 +272,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         for (Object response : objects) {
                             Coin newCoin = JsonUtils.getCoinFromResponse((JsonElement) response);
 
-                            Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() +
-                                    ", " + newCoin.getImageUrl() + ", " + newCoin.getCurrentPrice()
-                                    + ", " + newCoin.getChange24h() + ", " + newCoin.getChange24hPct());
-                            mOwnedCoins.add(newCoin);
+                            if(newCoin != null) {
+                                Timber.d("Fetched coin: " + newCoin.getFullName() + ", " + newCoin.getName() +
+                                        ", " + newCoin.getImageUrl() + ", " + newCoin.getCurrentPrice()
+                                        + ", " + newCoin.getChange24h() + ", " + newCoin.getChange24hPct());
+                                mOwnedCoins.add(newCoin);
+                            }
                         }
-
                         return calculateTotalPortfolio(mOwnedCoins, mTransactions.getValue());
                     }
                 })
@@ -481,42 +486,46 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     public void retrieveTransactions() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mTransactions = viewModel.getTransactions();
 
-        mTransactions = transactionDatabase.transactionDao().getAllTransactions();
         mTransactions.observe(this, new Observer<List<Transaction>>() {
             @Override
             public void onChanged(@Nullable List<Transaction> transactions) {
-                Timber.d("Database loaded");
+                Timber.d("Database updated");
 
-                if (mTransactions.getValue().size() == 0) {
-                    // Show dialog in ui thread
-                    mHandler = new Handler(Looper.getMainLooper()) {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            MaterialStyledDialog dialog = new MaterialStyledDialog.Builder(MainActivity.this)
-                                    .setTitle(getString(R.string.welcome_dialog_title))
-                                    .setDescription(getString(R.string.welcome_dialog_description))
-                                    .withIconAnimation(false)
-                                    .withDarkerOverlay(true)
-                                    .setIcon(R.drawable.ic_rocket)
-                                    .setNegativeText(getString(R.string.welcome_dialog_button_left))
-                                    .setPositiveText(getString(R.string.welcome_dialog_button_right))
-                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                            setupDemoPortfolio();
-                                        }
-                                    })
-                                    .build();
-                            dialog.show();
-                        }
-                    };
+                if(refreshOnDbChange) {
+                    refreshOnDbChange = false;
+                    if (mTransactions.getValue().size() == 0) {
+                        // Show dialog in ui thread
+                        mHandler = new Handler(Looper.getMainLooper()) {
+                            @Override
+                            public void handleMessage(Message msg) {
+                                MaterialStyledDialog dialog = new MaterialStyledDialog.Builder(MainActivity.this)
+                                        .setTitle(getString(R.string.welcome_dialog_title))
+                                        .setDescription(getString(R.string.welcome_dialog_description))
+                                        .withIconAnimation(false)
+                                        .withDarkerOverlay(true)
+                                        .setIcon(R.drawable.ic_rocket)
+                                        .setNegativeText(getString(R.string.welcome_dialog_button_left))
+                                        .setPositiveText(getString(R.string.welcome_dialog_button_right))
+                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                            @Override
+                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                setupDemoPortfolio();
+                                            }
+                                        })
+                                        .build();
+                                dialog.show();
+                            }
+                        };
 
-                    Message message = mHandler.obtainMessage();
-                    message.sendToTarget();
+                        Message message = mHandler.obtainMessage();
+                        message.sendToTarget();
 
-                } else {
-                    fetchFullCoinsInfo();
+                    } else {
+                        fetchFullCoinsInfo();
+                    }
                 }
             }
         });
