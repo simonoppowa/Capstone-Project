@@ -90,7 +90,7 @@ public class Portfolio24hGraphFragment extends Fragment {
         mChart.setAutoScaleMinMaxEnabled(true);
 
         mChart.getDescription().setEnabled(true);
-        mChart.getDescription().setText("Total Portfolio");
+        mChart.getDescription().setText(getString(R.string.graph_total_portfolio));
         mChart.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mChart.setGridBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mChart.setDrawBorders(false);
@@ -124,7 +124,7 @@ public class Portfolio24hGraphFragment extends Fragment {
             mChart.notifyDataSetChanged();
         } else {
             // create a dataset and give it a type
-            set1 = new LineDataSet(values, "DataSet 1");
+            set1 = new LineDataSet(values, getString(R.string.portfolio_name));
 
             set1.setDrawIcons(false);
 

@@ -19,6 +19,7 @@
 
     <string name="portfolio_name">Portfolio</string>
     <string name="graph_no_data">No Data</string>
+    <string name="graph_total_portfolio">Total Portfolio</string>
 
     <string name="snack_bar_removed_coin">"%1$s removed!"</string>
     <string name="undo_button">UNDO</string>

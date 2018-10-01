@@ -22,7 +22,6 @@ public interface TransactionDao {
     @Query("SELECT * FROM transaction_table")
     List<Transaction> getAllTransactionsAsList();
 
-
     @Query("SELECT * FROM transaction_table WHERE coin_name =:coinName")
     Transaction getSingleTransaction(String coinName);
 
