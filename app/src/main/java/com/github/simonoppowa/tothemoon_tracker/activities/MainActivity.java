@@ -1,6 +1,8 @@
 package com.github.simonoppowa.tothemoon_tracker.activities;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
@@ -11,6 +13,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,7 +29,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.simonoppowa.tothemoon_tracker.R;
 import com.github.simonoppowa.tothemoon_tracker.adapters.CoinSearchAdapter;
-import com.github.simonoppowa.tothemoon_tracker.databases.GetDatabaseAsyncTask;
 import com.github.simonoppowa.tothemoon_tracker.databases.TransactionDatabase;
 import com.github.simonoppowa.tothemoon_tracker.fragments.CoinsInfoFragment;
 import com.github.simonoppowa.tothemoon_tracker.fragments.Portfolio24hGraphFragment;
@@ -49,8 +51,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.searchdialog.SimpleSearchFilter;
 import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
@@ -63,8 +67,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
-        GetDatabaseAsyncTask.OnDatabaseTaskCompleted, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String CRYPTOCOMPARE_API_BASE_URL = "https://min-api.cryptocompare.com/data/";
     public static final String CRYPTOCOMPARE_BASE_URL = "https://www.cryptocompare.com/";
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private String mUsedCurrency;
     private List<Coin> mOwnedCoins;
     private ArrayList<Coin> mCoinsAvailable;
-    private List<Transaction> mTransactions;
+    private LiveData<List<Transaction>> mTransactions;
 
     private boolean mRefreshOnResume;
 
@@ -126,9 +129,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             return;
         }
 
-        if (mTransactions == null) {
-            new GetDatabaseAsyncTask(this).execute(transactionDatabase);
-        }
+        retrieveTransactions();
+
     }
 
     @Override
@@ -186,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                     @Override
                     public void onSelected(BaseSearchDialogCompat dialog, Coin coin, int position) {
-                        if(mTransactions != null && mTransactions.size() > MAX_API_CALLS) {
+                        if(mTransactions != null && mTransactions.getValue().size() > MAX_API_CALLS) {
                             Toast.makeText(MainActivity.this, getString(R.string.error_max_transactions), Toast.LENGTH_SHORT)
                                     .show();
                         } else {
@@ -229,17 +231,17 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         ft.commit();
         mOwnedCoins = new ArrayList<>();
 
-        new GetDatabaseAsyncTask(this).execute(transactionDatabase);
+        retrieveTransactions();
     }
 
     private void fetchFullCoinsInfo() {
-        if (mTransactions != null) {
+        if (mTransactions.getValue() != null) {
             mCoinServiceInterface = retrofit.create(CoinServiceInterface.class);
 
             List<Observable<?>> coinInfoRequests = new ArrayList<>();
             List<Observable<?>> coin24hInfoRequest = new ArrayList<>();
 
-            for (Transaction transaction : mTransactions) {
+            for (Transaction transaction : mTransactions.getValue()) {
                 Observable<JsonElement> coinInfoCall = mCoinServiceInterface.getCoinInfo(transaction.getCoinName(), mUsedCurrency, 0);
                 coinInfoRequests.add(coinInfoCall);
 
@@ -253,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    @SuppressLint("CheckResult")
     public void fetchCoinsInfo(final List<Observable<?>> coinInfoRequests) {
 
         // Use RxJava2 to coordinate coinInfoCalls
@@ -271,9 +274,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             mOwnedCoins.add(newCoin);
                         }
 
-                        return calculateTotalPortfolio(mOwnedCoins, mTransactions);
+                        return calculateTotalPortfolio(mOwnedCoins, mTransactions.getValue());
                     }
                 })
+                // Do not run on ui thread
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
@@ -295,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 );
     }
 
+    @SuppressLint("CheckResult")
     public void fetchCoins24hInfo(List<Observable<?>> coin24hInfoRequest) {
 
         // Use RxJava2 to coordinate coin24hInfoCalls
@@ -318,6 +325,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         return coinsAtTime;
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         new Consumer<Object>() {
                             @Override
@@ -373,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void createPortfolioFragment(Portfolio currentPortfolio) {
 
         // Calculate all necessary numbers
-        Portfolio portfolio = calculateTotalPortfolio(mOwnedCoins, mTransactions);
+        Portfolio portfolio = calculateTotalPortfolio(mOwnedCoins, mTransactions.getValue());
         Timber.d("Portfolio created: " + portfolio.getTotalPrice() + ", " + portfolio.getChange24h() + ", " + portfolio.getChange24hPct());
 
         // Create Portfolio Fragment
@@ -402,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void createCoinsInfoFragment() {
 
         // Create CoinsInfoFragment
-        mCoinsInfoFragment = CoinsInfoFragment.newInstance(mUsedCurrency, (ArrayList<Coin>) mOwnedCoins, mTransactions);
+        mCoinsInfoFragment = CoinsInfoFragment.newInstance(mUsedCurrency, (ArrayList<Coin>) mOwnedCoins, mTransactions.getValue());
         FragmentManager fm = getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
@@ -414,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         // Create CoinsInfoFragment
         mPortfolioPieChartFragment = PortfolioPieChartFragment
-                .newInstance((ArrayList<Coin>) mOwnedCoins, mTransactions);
+                .newInstance((ArrayList<Coin>) mOwnedCoins, mTransactions.getValue());
         FragmentManager fm = getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
@@ -430,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             double sum = 0;
             long time = coinsAtTime.get(0).get(i).getAtTime();
             while (j < coinsAtTime.size()) {
-                Transaction coinTransaction = mTransactions.get(mTransactions.indexOf(new Transaction(coinsAtTime.get(j).get(0).getName(),
+                Transaction coinTransaction = mTransactions.getValue().get(mTransactions.getValue().indexOf(new Transaction(coinsAtTime.get(j).get(0).getName(),
                         0, 0)));
                 sum += (coinsAtTime.get(j).get(i).getCurrentPrice() * coinTransaction.getQuantity());
                 j++;
@@ -471,6 +480,49 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         startActivity(intent);
     }
 
+    public void retrieveTransactions() {
+
+        mTransactions = transactionDatabase.transactionDao().getAllTransactions();
+        mTransactions.observe(this, new Observer<List<Transaction>>() {
+            @Override
+            public void onChanged(@Nullable List<Transaction> transactions) {
+                Timber.d("Database loaded");
+
+                if (mTransactions.getValue().size() == 0) {
+                    // Show dialog in ui thread
+                    mHandler = new Handler(Looper.getMainLooper()) {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            MaterialStyledDialog dialog = new MaterialStyledDialog.Builder(MainActivity.this)
+                                    .setTitle(getString(R.string.welcome_dialog_title))
+                                    .setDescription(getString(R.string.welcome_dialog_description))
+                                    .withIconAnimation(false)
+                                    .withDarkerOverlay(true)
+                                    .setIcon(R.drawable.ic_rocket)
+                                    .setNegativeText(getString(R.string.welcome_dialog_button_left))
+                                    .setPositiveText(getString(R.string.welcome_dialog_button_right))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            setupDemoPortfolio();
+                                        }
+                                    })
+                                    .build();
+                            dialog.show();
+                        }
+                    };
+
+                    Message message = mHandler.obtainMessage();
+                    message.sendToTarget();
+
+                } else {
+                    fetchFullCoinsInfo();
+                }
+            }
+        });
+
+    }
+
     private void setupDemoPortfolio() {
         // Insert transactions in new thread
         new Thread(new Runnable() {
@@ -497,42 +549,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             mUsedCurrency = sharedPreferences.getString(key, getString(R.string.pref_currency_value_usd));
             Timber.d("Used Currency changed to %s", mUsedCurrency);
             mRefreshOnResume = true;
-        }
-    }
-
-    @Override
-    public void onDatabaseTaskCompleted(List<Transaction> transactions) {
-        mTransactions = transactions;
-
-        if (mTransactions.size() == 0) {
-            // Show dialog in ui thread
-            mHandler = new Handler(Looper.getMainLooper()) {
-                @Override
-                public void handleMessage(Message msg) {
-                    MaterialStyledDialog dialog = new MaterialStyledDialog.Builder(MainActivity.this)
-                            .setTitle(getString(R.string.welcome_dialog_title))
-                            .setDescription(getString(R.string.welcome_dialog_description))
-                            .withIconAnimation(false)
-                            .withDarkerOverlay(true)
-                            .setIcon(R.drawable.ic_rocket)
-                            .setNegativeText(getString(R.string.welcome_dialog_button_left))
-                            .setPositiveText(getString(R.string.welcome_dialog_button_right))
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    setupDemoPortfolio();
-                                }
-                            })
-                            .build();
-                    dialog.show();
-                }
-            };
-
-            Message message = mHandler.obtainMessage();
-            message.sendToTarget();
-
-        } else {
-            fetchFullCoinsInfo();
         }
     }
 

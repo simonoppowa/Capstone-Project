@@ -179,7 +179,7 @@ public class AddTransactionActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            Toast.makeText(AddTransactionActivity.this, mSelectedCoin.getName() + " transaction added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddTransactionActivity.this, mSelectedCoin.getName() + " added", Toast.LENGTH_SHORT).show();
         }
     }
 }

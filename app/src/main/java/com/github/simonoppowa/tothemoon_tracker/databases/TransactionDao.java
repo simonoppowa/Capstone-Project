@@ -1,7 +1,7 @@
 package com.github.simonoppowa.tothemoon_tracker.databases;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
@@ -17,7 +17,7 @@ public interface TransactionDao {
     void insertTransaction(Transaction transaction);
 
     @Query("SELECT * FROM transaction_table")
-    List<Transaction> getAllTransactions();
+    LiveData<List<Transaction>> getAllTransactions();
 
     @Query("SELECT * FROM transaction_table WHERE coin_name =:coinName")
     Transaction getSingleTransaction(String coinName);
