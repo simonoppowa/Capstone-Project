@@ -6,7 +6,7 @@ android {
         ToTheMoon {
             keyAlias 'ToTheMoon'
             keyPassword 'ToTheMoon'
-            storeFile file('C:/Users/Simon/OneDrive/Android Developer/Capstone/ToTheMoon-Tracker/keystore.jks')
+            storeFile file("$rootDir/keystore.jks")
             storePassword 'ToTheMoon'
         }
     }
