@@ -15,6 +15,8 @@ Supported currencies are USD, EUR, JPY and GBP.
 ![](https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot1.png?raw=true) ![](https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot2.png?raw=true)
 
 ### Libraries used
+* [RxJava](https://github.com/ReactiveX/RxJava)
+* [RxAndroid](https://github.com/ReactiveX/RxAndroid)
 * [Timber](https://github.com/JakeWharton/timber)
 * [Butterknife](https://github.com/JakeWharton/butterknife)
 * [Picasso](https://github.com/square/picasso)
@@ -25,7 +27,14 @@ Supported currencies are USD, EUR, JPY and GBP.
 * [search-dialog](https://github.com/mirrajabi/search-dialog)
 * [LicensesDialog](https://github.com/PSDev/LicensesDialog)
 * [MaterialStyledDialogs](https://github.com/javiersantos/MaterialStyledDialogs)
-* [RxJava](https://github.com/ReactiveX/RxJava)
+
+### Todo
+* Add app icon
+* Add animations
+* Fix remaining bugs
+
+### Crypto currency data from
+[CryptoCompare.com](https://min-api.cryptocompare.com/)
 
 ### Icons and Fonts from
 * [Rocket Icon](https://www.flaticon.com/free-icon/rocket_214337) designed by Pixel Buddha from Flaticon
