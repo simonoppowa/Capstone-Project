@@ -5,6 +5,7 @@
 __From Entry Level Programmer / Android Developer__
 
 ### Description
+
 A simple and easy to use crypto currency tracker with support for over 5000+ coins.
 Manage your Bitcoin, Ethereum, Ripple (…) portfolio without providing your public and private keys.
 This App is completely free (no ads) and open-source, you can check out the source code at github.com/simonoppowa.
@@ -12,9 +13,11 @@ Supported currencies are USD, EUR, JPY and GBP.
 
 ### Screenshots
 
-![](https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot1.png?raw=true) ![](https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot2.png?raw=true)
+<img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot1.png?raw=true" alt="alt text" width="400"> &nbsp;&nbsp; <img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot2.png?raw=true" alt="alt text" width="400">
+<img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot3.png?raw=true" alt="alt text" width="400">
 
 ### Libraries used
+
 * [RxJava](https://github.com/ReactiveX/RxJava)
 * [RxAndroid](https://github.com/ReactiveX/RxAndroid)
 * [Timber](https://github.com/JakeWharton/timber)
@@ -29,20 +32,24 @@ Supported currencies are USD, EUR, JPY and GBP.
 * [MaterialStyledDialogs](https://github.com/javiersantos/MaterialStyledDialogs)
 
 ### Todo
+
 * Add app icon
 * Add animations
 * Fix remaining bugs
 
 ### Crypto currency data from
+
 [CryptoCompare.com](https://min-api.cryptocompare.com/)
 
 ### Icons and Fonts from
+
 * [Rocket Icon](https://www.flaticon.com/free-icon/rocket_214337) designed by Pixel Buddha from Flaticon
 * [Moon Icon](https://www.flaticon.com/free-icon/moon_1137453) designed by Smashicons from Flaticon
 * [Aldrich Font](https://fonts.google.com/specimen/Aldrich?selection.family=Aldrich) Copyright dMADType
 
 
 ### License
+
 ```
 Copyright 2018 Simon Oppowa
     
