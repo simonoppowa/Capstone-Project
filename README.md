@@ -13,8 +13,8 @@ Supported currencies are USD, EUR, JPY and GBP.
 
 ### Screenshots
 
-<img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot1.png?raw=true" alt="alt text" width="400"> &nbsp;&nbsp; <img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot2.png?raw=true" alt="alt text" width="400">
-<img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screenshot3.png?raw=true" alt="alt text" width="400">
+<img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screen1.png?raw=true" alt="alt text" width="400"> &nbsp;&nbsp; <img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screen2.png?raw=true" alt="alt text" width="400">
+<img src="https://github.com/simonoppowa/Capstone-Project/blob/master/screens/screen3.png?raw=true" alt="alt text" width="400">
 
 ### Libraries used
 
